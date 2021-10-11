@@ -1,16 +1,23 @@
 #!/usr/bin/bash
 
+#SBATCH --account=bgmp
+#SBATCH --partition=bgmp
+#SBATCH --output="%x_%j.out"
+#SBATCH --error="%x_%j.err"
+#SBATCH --cpus-per-task=8
+#SBATCH --nodes=1
+
 # TODO
 # /projects/bgmp/shared/2021_projects/VCU/hic_week1
 # 
 
 function usage {
-	echo "usage: calc_scc.sh [-d, --input-directory] [-o, --output-directory] [-f, --force]";
+	echo "usage: calc_scc.sh [-i, --input-directory] [-o, --output-directory] [-f, --force] [-m, --metafile]";
 }
 
 # inspried by https://stackoverflow.com/questions/48086633/simple-logging-levels-in-bash
 declare -A error_levels=([DEBUG]=0 [INFO]=1 [WARN]=2 [ERROR]=3 [FATAL]=4)
-script_logging_level="INFO"
+script_logging_level="DEBUG"
 
 function log {
     local log_priority=$1
@@ -41,21 +48,27 @@ fi
 declare -- FORCE=false
 while [ "" != "$1" ]; do
 	case $1 in 
-		-d | --input-directory)
+		-i | --input-directory)
 			shift
-			DIRECTORY=$1
+			declare -r DIRECTORY=$1
 			log "DEBUG" "Directory: $DIRECTORY"
 			;;
 
 		-o | --output-directory)
 			shift
-			OUTPUT=$1
+			declare -r OUTPUT=$1
 			log "DEBUG" "Output: $OUTPUT"
 			;;
 
 		-f | --force)
 			FORCE=true
 			log "DEBUG" "Force parameter turned on."
+			;;
+
+		-m | --metafile)
+			shift
+			declare -r METADATA=$1 # File name, friendly name
+			log "DEBUG" "Metadata: $METADATA"
 			;;
 
 		-h | --help)
@@ -74,12 +87,15 @@ done
 test -z $DIRECTORY	&&	{ log	"ERROR" 	"Hic Directory not supplied.";		exit 1; }
 test -d $DIRECTORY 	||	{ log	"ERROR" 	"Hic Directory does not exist.";	exit 1; }
 
+test -z $METADATA	&&	{ log	"ERROR" 	"Metadata not supplied.";			exit 1; }
+test -f $METADATA 	||	{ log	"ERROR" 	"Metadata does not exist.";			exit 1; }
+
 test -z $OUTPUT		&&	{ log	"ERROR" 	"Output Directory not supplied.";	exit 1; }
 
 test -d	$OUTPUT		&& 	{ 
 	if [[ $FORCE -eq false ]]; then 
-		local repeat=true
-		while [[ $repeat ]]; do
+		repeat=true
+		while ! (test -z $repeat); do
 			log "WARN" "Output directory exists. Overwrite? [Y/n/c]: "	
 			read choice		
 			case $choice in 
@@ -101,45 +117,50 @@ test -d	$OUTPUT		&& 	{
 	fi
 }
 
-
 # change this?
-tmp="$DIRECTORY/../cool_files/cool-$$"
+tmp="$DIRECTORY/../calc_scc_tmp-$$"
 test -d $tmp && rm -rf $tmp
 mkdir $tmp
 
 log "INFO" "Converting .hic files to .cool files."
 
-for file in $(ls $DIRECTORY)
+# just pull out the ids for now, this should really be done beforehand
+tail -n +2 $METADATA | cut -d, -f 2,2 | while read id
 do
-	# check last 4 characters for extension (alternatively, *.hic)
-	if [[ ${file: -4} == ".hic" ]]
-	then
-		log "DEBUG" "Converting $file."
-		target="$DIRECTORY/$file"
-		dest="$tmp/$file"
-		hicConvertFormat -m $target --inputFormat hic --outputFormat cool -o $dest --resolutions 10000
+	log "DEBUG" "id=$id"
+	matrix="$DIRECTORY/$id.hic"
+	log "DEBUG" "hicConvertFormat converting file: $matrix"
 
-		# if [[ $? != 0 ]]; then 
-		# 	# Exit for now
-		# 	rm -rf $tmp
-		# 	abort "hicConvertFormat failed on $file" $?
-		# fi
+	dest="$tmp/$id.cool"
+	hicConvertFormat -m $matrix --inputFormat hic --outputFormat cool -o $dest --resolutions 10000
+
+	if [[ $? != 0 ]]; then 
+		# Exit for now
+		rm -rf $tmp
+		abort "hicConvertFormat failed on $file" $?
 	fi
 done
 
+# at this point it is safe to remove output directory if it exists
+test -d $OUTPUT && rm -rf $OUTPUT
+mkdir $OUTPUT
+
+log "INFO" "Converting .cool files to .scc files."
+for fcool1 in $(ls $tmp)
+do
+	for fcool2 in $(ls $tmp)
+	do
+		if [ "$fcool1" != "$fcool2" ]
+		then
+
+			log "DEBUG" "hicrep calculating scc for: $fcool1 $fcool2"
+			hicrep "$tmp/$fcool1" "$tmp/$fcool2" "$OUTPUT/$fcool1_$fcool2.scc.txt" --binSize 10000 --h 1 --dBPMax 500000 
+		fi 
+	done
+done
+
+#clean up
+rm -rf $tmp
+
+echo "Program Complete!"
 exit 0
-
-# at this point it is safe to remove output directory if exists
-# test -d $OUTPUT && rm -rf $OUTPUT
-# mkdir $OUTPUT
-
-# log "INFO" "Converting .cool files to .scc files."
-# for file in $(ls $DIRECTORY)
-# do
-# 	# check last 6 characters for extension (alternatively, *.mcool)
-# 	if [[ ${file: -5} == ".cool"]]; then
-# 		log "DEBUG" "Converting $file."
-# 		hicrep $fmcool1 $fmcool2 outputSCC.txt --binSize 10000 --h 1 --dBPMax 500000  
-# 	fi
-# done
-
