@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+
 #SBATCH --account=bgmp
 #SBATCH --partition=bgmp
 #SBATCH --output="%x_%j.out"
@@ -6,13 +7,17 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --nodes=1
 
+# TODO
+# /projects/bgmp/shared/2021_projects/VCU/hic_week1
+# 
+
 function usage {
-	echo "usage: pca.sh [-m, --metafile] [-i, --input-directory] [-o, --output-directory] [-f, --force]";
+	echo "usage: calc_scc.sh [-i, --input-directory] [-o, --output-directory] [-f, --force] [-m, --metafile]";
 }
 
 # inspried by https://stackoverflow.com/questions/48086633/simple-logging-levels-in-bash
 declare -A error_levels=([DEBUG]=0 [INFO]=1 [WARN]=2 [ERROR]=3 [FATAL]=4)
-script_logging_level="DEBUG"
+script_logging_level="INFO"
 
 function log {
     local log_priority=$1
@@ -26,15 +31,23 @@ function log {
     echo "${log_priority}: ${log_message}"
 }
 
-FORCE=false
+function abort {
+	local log_message=$1
+	local error_code=$2
+	log "FATAL" "$log_message $error_code"
+	exit $error_code
+}
+
+if [ $# -eq 0 ]; then
+	log "ERROR" "No arguments provided."
+	usage
+	exit 1
+fi
+
+
+declare -- FORCE=false
 while [ "" != "$1" ]; do
 	case $1 in 
-		-m | --metafile)
-			shift
-			declare -r METADATA=$1 # File name, friendly name
-			log "DEBUG" "Metadata: $METADATA"
-			;;
-
 		-i | --input-directory)
 			shift
 			declare -r DIRECTORY=$1
@@ -50,6 +63,12 @@ while [ "" != "$1" ]; do
 		-f | --force)
 			FORCE=true
 			log "DEBUG" "Force parameter turned on."
+			;;
+
+		-m | --metafile)
+			shift
+			declare -r METADATA=$1 # File name, friendly name
+			log "DEBUG" "Metadata: $METADATA"
 			;;
 
 		-h | --help)
@@ -76,7 +95,7 @@ test -z $OUTPUT		&&	{ log	"ERROR" 	"Output Directory not supplied.";	exit 1; }
 test -d	$OUTPUT		&& 	{ 
 	if [[ $FORCE -eq false ]]; then 
 		repeat=true
-		while [[ $repeat ]]; do
+		while ! (test -z $repeat); do
 			log "WARN" "Output directory exists. Overwrite? [Y/n/c]: "	
 			read choice		
 			case $choice in 
@@ -98,39 +117,50 @@ test -d	$OUTPUT		&& 	{
 	fi
 }
 
-declare -i n=$(tail -n +2 $METADATA | wc -l)
-declare -a ids=()
-for i in $(tail -n +2 $METADATA | cut -d, -f 2,2 | tr '\n' ' ')
+# change this?
+tmp="$DIRECTORY/../calc_scc_tmp-$$"
+test -d $tmp && rm -rf $tmp
+mkdir $tmp
+
+log "INFO" "Converting .hic files to .cool files."
+
+# just pull out the ids for now, this should really be done beforehand
+tail -n +2 $METADATA | cut -d, -f 2,2 | while read id
 do
-	ids+=($i)
+	log "DEBUG" "id=$id"
+	matrix="$DIRECTORY/$id.hic"
+	log "DEBUG" "hicConvertFormat converting file: $matrix"
+
+	dest="$tmp/$id.cool"
+	hicConvertFormat -m $matrix --inputFormat hic --outputFormat cool -o $dest --resolutions 10000
+
+	if [[ $? != 0 ]]; then 
+		# Exit for now
+		rm -rf $tmp
+		abort "hicConvertFormat failed on $file" $?
+	fi
 done
 
-# TODO: this shouldnt be here, this should be defined in the metadata?
-files=()
-for ((i = 0; i < $n; i++))
-do
-	files+=("$DIRECTORY/${ids[$i]}.hic")
-done
-log "DEBUG" "Files: ${files[*]}.hic"
-
-# oddly the cut command did not work on this column
-declare -a tumors=("Primary" "Primary" "Primary" "CR" "CR" "CR" "LiverMet" "LiverMet" "LiverMet")
-log "DEBUG" "Tumors: ${tumors[*]}"
-
-friendly_names=()
-for ((i = 0; i < $n; i++))
-do
-	friendly_names+=("${tumors[$i]}-${ids[$i]}")
-done
-log "DEBUG" "Friendly Names: ${friendly_names[*]}"
-
-# declare -a colors=("BLUE" "BLUE" "BLUE" "RED" "RED" "RED" "GREEN" "GREEN" "GREEN")
-
-
-
-# safe to remove and create output directory here
-test -d $OUTPUT	&& rm -rf $OUTPUT
+# at this point it is safe to remove output directory if it exists
+test -d $OUTPUT && rm -rf $OUTPUT
 mkdir $OUTPUT
 
-s=100000
-/usr/bin/time -v fanc pca -n ${friendly_names[*]} -Z -s $s -p "$OUTPUT/$$.png" ${files[*]} "$OUTPUT/$$.pca"
+log "INFO" "Converting .cool files to .scc files."
+for fcool1 in $(ls $tmp)
+do
+	for fcool2 in $(ls $tmp)
+	do
+		if [ "$fcool1" != "$fcool2" ]
+		then
+
+			log "DEBUG" "hicrep calculating scc for: $fcool1 $fcool2"
+			hicrep "$tmp/$fcool1" "$tmp/$fcool2" "$OUTPUT/$fcool1_$fcool2.scc.txt" --binSize -1 --h 1 --dBPMax 500000 
+		fi 
+	done
+done
+
+#clean up
+rm -rf $tmp
+
+echo "Program Complete!"
+exit 0
