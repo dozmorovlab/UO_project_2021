@@ -3,7 +3,7 @@
 To check the quality of the biological replicates, use `HiCExplorer 3.0` to create distance-decay plots. The plots should look near-identical for biological replicates.
 \
 \
-First, create the appropriate environment with [environment.yml](./environment.yml) and the commands:
+First, create the appropriate environment by saving the file [environment.yml](./environment.yml), then run commands:
 \
 ```conda env create -f environment.yml```
 \
