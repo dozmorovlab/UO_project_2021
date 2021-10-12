@@ -1,5 +1,6 @@
 # QC
 
 ### Types of Analysis
- * Principle Coordinate Analysis (PCA)
+ * Principle Component Analysis (PCA)
  * Classical Multidimensional Scaling (MDS)
+ * Distance Decay Plots 
