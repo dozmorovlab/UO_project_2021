@@ -18,3 +18,8 @@ If you have `.hic` files, you will need to convert them to `.cool` files through
 Then, use the resulting `.cool` files with HiCExplorer's [hicPlotDistVsCounts](./scripts/hicPlotDistVsCounts.sh) function.
 - Input: files with format `<name>.cool`.
 - Output: distance decay plots.
+\
+\
+\
+\
+*note: to improve this directory, specifically the scripts, the file structure arguments still need to be generalized (e.g. replace <input filename> with some commands).*
