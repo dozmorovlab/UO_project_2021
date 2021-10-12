@@ -13,7 +13,7 @@ First, create the appropriate environment by saving the file [environment.yml](.
 \
 If you have `.hic` files, you will need to convert them to `.cool` files through HiCExplorer's [hicConvertFormat](./scripts/cool_converter.sh) function. 
 - Input: files with format `<name>.hic`.
-- Output: files will be `<name>.cool` with specified resolution in specified directory.
+- Output: files will be `<name>_resolution_<resolution>.cool` with the specified resolution in specified directory.
 
 \
 \
