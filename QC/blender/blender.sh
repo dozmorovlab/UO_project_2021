@@ -6,19 +6,21 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --nodes=1
 #SBATCH --mem=128G
+
+# this should be defined in the environment
 source '../../Utilities/Src/bash/logging.sh'
 
 function usage {
-	echo "usage: blender.sh [-m metafile] [-i input-directory] [-f form]";
+	echo "usage: blender.sh [-m metafile] [-i input-directory] [-f form] [-r references]";
 }
 
-while getopts "m:i:h:t:" opt
+while getopts "m:i:h:t:r" opt
 do
 	case $opt in 
 		i) INPUT=$OPTARG	;;
 		h) usage; exit 0 	;;
 		m) METADATA=$OPTARG ;;
-		f) FORMAT=$OTPARG 	;;
+		r) REFRENCE=$OPTARG ;;
 		[?]) usage; exit 1	;;
 	esac
 done
@@ -38,6 +40,10 @@ CR2="${INPUT}/105246/merged_nodups.txt.gz"
 
 LiverMet1="${INPUT}/100887/merged_nodups.txt.gz"
 LiverMet2="${INPUT}/100889/merged_nodups.txt.gz"
+
+test -d "references" || { mkdir $REFRENCE }
+genomeFile=$(basename $REFRENCE)
+test -f "references/$genomeFile" || cp $REFRENCE "references/$genomeFile" 
 
 #echo "SORTING"
 
