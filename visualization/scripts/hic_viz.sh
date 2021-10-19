@@ -7,7 +7,7 @@
 #SBATCH --time=1-00:00:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=50G
+#SBATCH --mem=70G
 
 conda activate hicexplorer
 
@@ -16,7 +16,7 @@ hic_file=/projects/bgmp/shared/2021_projects/VCU/hic_week1/100887.hic #should ch
 
 res=50000 #desired resolution
 name=100887
-#two lines makes h5 directory
+
 mkdir -p /projects/bgmp/shared/2021_projects/VCU/hicexplorer/visualization/$name/$res #should change to relative to paths
 dir=/projects/bgmp/shared/2021_projects/VCU/hicexplorer/visualization/$name/$res #where to the converted h5 files
 
@@ -26,11 +26,13 @@ hicConvertFormat \
 --inputFormat hic \
 --outFileName $dir/matrix.cool \
 --outputFormat cool \
---resolutions $res;
+--resolutions $res
 
 file=$dir/matrix_$res.cool
 
-hicCorrectMatrix diagnostic_plot -m $file -o $dir/hic_corrected.png #haven't tested
+hicCorrectMatrix correct -m $file --correctionMethod ICE --filterThreshold -1.5 5 -o $dir/corrected_matrix.cool
+hicCorrectMatrix diagnostic_plot -m $dir/corrected_matrix.cool -o $dir/cool_corrected.png 
+file=$dir/corrected_matrix.cool
 
 hicPCA -m $dir/matrix_$res.cool -o $dir/pca1.bw $dir/pca2.bw -f bigwig #works but mem needs to be at least 10G
 
