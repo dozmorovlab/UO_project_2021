@@ -24,9 +24,17 @@ bwa index -a bwtsw Homo_sapiens.GRCh38.dna.primary_assembly.fa index_
 [main] Real time: 2624.582 sec; CPU: 2617.287 sec
 ```
 
+Load samtools and create the index 
+```bash
+# version: samtools/1.5
+ftp://ftp.ensembl.org/pub/release-84/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+samtools faidx Homo_sapiens.GRCh38.dna.primary_assembly.fa
+cut -f1,2 Homo_sapiens.GRCh38.dna.primary_assembly.fa.fai > chrom.sizes
+```
+
 ### Usage
 ```bash
-./blender.sh [-m, --metafile] [-o, --output-directory] [-f, --force]
+./blender.sh [-m, --metafile] [-o, --output-directory] [-f, --force] [-r, --reference]
 ```
 
 
