@@ -2,13 +2,31 @@
 ## Author: John Ogata, Brian Palmer
 ## 10/17/21
 
+
+### Dependencies
+ 1. Juicer
+ 	* Gnu Core Utils
+ 	* Burrows Wheeler Aligner (BGMP Internal: `module load bwa/0.7.17` on Talapas). [Documentation]('https://hcc.unl.edu/docs/applications/app_specific/bioinformatics_tools/alignment_tools/bwa/running_bwa_commands/').
+
 ### Setup
 ```bash
 conda env create --file environment.yaml
 conda activate blender
 ````
 
+Index the primary assembly. bwtsw is used for long assembly.
+```bash
+bwa index -a bwtsw Homo_sapiens.GRCh38.dna.primary_assembly.fa index_
+```
+```
+[main] Version: 0.7.17-r1188
+[main] CMD: bwa index -a bwtsw Homo_sapiens.GRCh38.dna.primary_assembly.fa index_
+[main] Real time: 2624.582 sec; CPU: 2617.287 sec
+```
+
 ### Usage
 ```bash
 ./blender.sh [-m, --metafile] [-o, --output-directory] [-f, --force]
 ```
+
+
