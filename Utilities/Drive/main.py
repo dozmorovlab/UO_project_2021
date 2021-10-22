@@ -103,7 +103,7 @@ def _recurse_download(service, folder_id, directory):
                 
                 # NOTE: Could check to see if file exists. Or check timestamp?
                 mode = 'w'
-                if item['mimeType'] in text_objects:
+                if item['mimeType'] not in text_objects:
                     mode += 'b'    
                 fh = io.FileIO(dest, mode)
                 print(f" ** {item['name']} **")
