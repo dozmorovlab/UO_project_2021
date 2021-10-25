@@ -14,8 +14,8 @@ import io
 # import pickle
 
 # current default folder id
-# TODO: do not include in pull request!!!
-DEFAULT_FID = '18pseOaL6mGIV5dvzvL62_5mkJubI565c'
+# NOTE: Update with folder id
+DEFAULT_FID = ''
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
