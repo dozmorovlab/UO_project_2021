@@ -46,12 +46,12 @@ jid=`sbatch <<- EOF | egrep -o -e "\b[0-9]+$"
 	#SBATCH --error="rand_sort_split_%j.err"
 	#SBATCH --cpus-per-task=8
 	#SBATCH --nodes=1
-	#SBATCH --mem=16G
+	#SBATCH --mem=128G
 
 	randfile="$outdir/rand.$(basename $file)"
 	splitfile_prefix="$outdir/$(basename $file)_"
 
-	/usr/bin/time -v sort --random-sort --random-source=$seed_file $file > $randfile
+	/usr/bin/time -v sort --random-sort --random-source=$seed_file --parallel=8 -S 128G $file > $randfile
 	/usr/bin/time -v split $randfile -n2 -d --verbose $splitfile_prefix
 
 	EOF`
