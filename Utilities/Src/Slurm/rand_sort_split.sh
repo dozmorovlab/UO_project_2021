@@ -44,9 +44,9 @@ jid=`sbatch <<- EOF | egrep -o -e "\b[0-9]+$"
 	#SBATCH --partition=$partition
 	#SBATCH --output="rand_sort_split_%j.out"
 	#SBATCH --error="rand_sort_split_%j.err"
-	#SBATCH --cpus-per-task=8
-	#SBATCH --nodes=1
+	#SBATCH --nodes=4
 	#SBATCH --mem=128G
+	#SBATCH --ntasks-per-node=40
 
 	randfile="$outdir/rand.$(basename $file)"
 	splitfile_prefix="$outdir/$(basename $file)_"
