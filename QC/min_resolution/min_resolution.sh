@@ -48,7 +48,8 @@ log "INFO" "Last reminder to make ${JUICER}/misc/calculate_map_resolution.sh con
 
 sleep 3
 
-# calculate_map_resolution.sh IS CURRENTLY USING HG38 GENOME SIZE FROM http://genomewiki.ucsc.edu/index.php/Hg38_17-way_Genome_size_statistics
+# calculate_map_resolution.sh by default is Hg19 http://genomewiki.ucsc.edu/index.php/Hg19_Genome_size_statistics,
+# this can be set to Hg38 manually (see http://genomewiki.ucsc.edu/index.php/Hg38_17-way_Genome_size_statistics)
 CMD="bash ${JUICER}/misc/calculate_map_resolution.sh $MERGED $COVERAGE"
 
 log "DEBUG" "account=$ACCT"
