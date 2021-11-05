@@ -2,7 +2,13 @@
 
 This script uses juicers calculate_map_resolution.sh to calculate the minimmum resolution available for the merged file.
 
-**Usage**
+### Setup
+
+```
+git clone https://github.com/aidenlab/juicer.git
+```
+
+### Usage
 ```
 Usage: blender.sh [-h help] [-j Juicer_directory] [-m Merged File Path] [-c Coverage Filename] [-a account] [-p partition]
 
