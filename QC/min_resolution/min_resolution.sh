@@ -55,8 +55,7 @@ log "DEBUG" "account=$ACCT"
 log "DEBUG" "partition=$PART"
 
 # if no slurm info, just run locally
-test -v ACCT && test -v PART && {
-
+test ! -z "$ACCT" &&  test ! -z "$PART" && {
 	jid=`sbatch <<- COVERAGE | grep -oE "\b[0-9]+$"
 		#!/usr/bin/bash -l
 		#SBATCH --account=$ACCT
@@ -72,7 +71,6 @@ test -v ACCT && test -v PART && {
 	log "INFO" "Slurm job $jid submitted."
 
 } || {
-
 	log "INFO" "Running locally."
 	eval "$CMD"
 }
