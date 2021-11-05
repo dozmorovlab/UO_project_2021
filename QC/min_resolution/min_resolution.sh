@@ -4,7 +4,13 @@
 source '../../Utilities/Src/Bash/logging.sh'
 
 function usage {
-	echo "Usage: blender.sh [-h help] [-j Juicer_directory] [-m Merged File] [-c Coverage Filename]";
+	echo "Usage: blender.sh [-h help] [-j Juicer_directory] [-m Merged File] [-c Coverage Filename] [-a account] [-p partition]";
+	echo
+	echo "[-j] - Root directory of juicer repository"
+	echo "[-m] - Path to merged file"
+	echo "[-c] - Coverage file (to create)"
+	echo "[-a] - Slurm account (optional)"
+	echo "[-p] - Slurm partition (optional)"
 	echo
 	echo "This file requries juicer/misc/calculate_map_resolution.sh from the juicer repo."
 	echo "Make sure to visit: https://github.com/aidenlab/juicer and download repository."
