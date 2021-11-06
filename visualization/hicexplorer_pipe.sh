@@ -21,10 +21,12 @@ help()
     echo "     -r     Input resolution; conversion of HiC to cool file format requires a resolution argument."
 	echo "     -s     Input span of genome to view with HiCPlotTADs. Use format chr<num>:<start_pos>-<stop_position>"
     echo " "
+	echo "The following option is optional:"
+	echo "     -t     Pass this option to only plot the TADs statistics (i.e. hicPlotTADs function). If so, the tracks.ini file must already exist in out_dir/TADs and you must still pass the above options."
 }
 
 # process input options
-while getopts ":hm:n:o:r:s:" option
+while getopts ":hm:n:o:r:s::t" option
 do
     case $option in 
         
@@ -46,6 +48,9 @@ do
 		
 		s) #enter the span of genome to be plotted with HiCPlotTADs
 			span=$OPTARG;;
+		
+		t) #only output tad stats?
+			tad_only=$OPTARG;;
 
         \?) #displays invalid option
             echo "Error: Invalid option(s)"
@@ -57,6 +62,14 @@ done
 # this pipe follows the HiCexplorer example page at https://hicexplorer.readthedocs.io/en/latest/content/example_usage.html
 
 conda activate hicexplorer
+
+if [ tad_only ]; then
+    hicPlotTADs \
+	--tracks $out_dir/TADS/tracks.ini \
+	--region $span \
+	-o $out_dir/tads_at_$span.png
+    exit 0
+fi
 
 mkdir -p $out_dir 
 
@@ -112,7 +125,6 @@ $out_dir/pca1.bw \
 $out_dir/pca2.bw \
 $out_dir/TADS/_tad_score.bm \
 $out_dir/TADS/_domains.bed \
-$out_dir/TADS/_boundaries.bed \
 --out $out_dir/TADS/tracks.ini
 
 ### this looks terrible; need to find a way to adjust #######
