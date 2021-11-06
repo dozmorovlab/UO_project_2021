@@ -8,15 +8,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=120G
 
-conda activate hicexplorer
 
-# -m for hic matrix
-# -n for name
-# -o for output directory
-# -r for resolution
-
-
-############# start editing ###################
 # help functions, displays user options
 help()
 {
@@ -27,11 +19,12 @@ help()
     echo "     -n     Input name of sample, e.g. 'primary' or 'liver_met'. Do not use spaces."
     echo "     -o     Specify an output directory name. If the directory does not exist it will be created."
     echo "     -r     Input resolution; conversion of HiC to cool file format requires a resolution argument."
+	echo "     -s     Input span of genome to view with HiCPlotTADs. Use format chr<num>:<start_pos>-<stop_position>"
     echo " "
 }
 
 # process input options
-while getopts ":hm:n:o:r:" option
+while getopts ":hm:n:o:r:s:" option
 do
     case $option in 
         
@@ -48,8 +41,11 @@ do
         o) #enter an output directory name
             out_dir=$OPTARG;;
 
-        r) #paired end? too bad
+        r) #specify resolution
             res=$OPTARG;;
+		
+		s) #enter the span of genome to be plotted with HiCPlotTADs
+			span=$OPTARG;;
 
         \?) #displays invalid option
             echo "Error: Invalid option(s)"
@@ -58,25 +54,11 @@ do
     esac
 done
 
+# this pipe follows the HiCexplorer example page at https://hicexplorer.readthedocs.io/en/latest/content/example_usage.html
 
-
-#change this, depending on the sample
-# matrix_dir=/projects/bgmp/shared/2021_projects/VCU/week2/livermet_merged
-# hic_matrix=$matrix_dir/inter_25_50.hic
-
-# change this, depending on the sample
-# name=liver_met
+conda activate hicexplorer
 
 mkdir -p $out_dir 
-# out_dir=$matrix_dir/hic_pipe_out$name
-
-# change this if wanted. Prefer ICE_corrected.. or KR_corrected.. or comment out to use original cool matrix
-# matrix=$out_dir/ICE_corrected_$name.cool
-
-
-# res=50000
-
-# this pipe follows the HiCexplorer example page at https://hicexplorer.readthedocs.io/en/latest/content/example_usage.html
 
 # first we convert from hic to cool, if need be.
 hicConvertFormat \
@@ -89,21 +71,14 @@ hicConvertFormat \
 a=_$res
 cool_matrix=$out_dir/$name$a.cool
 
-# # normalize matrix
-# hicNormalize -m $cool_matrix -o $cool_matrix -n norm_range
-
-# # then we correct the matrix
+# then view count frequencies
 hicCorrectMatrix diagnostic_plot -m $cool_matrix -o $out_dir/diagnostic_plot_before_ICE_$name.png
 
 
-# ICE correction
+# ICE correction and review of count frequencies
 hicCorrectMatrix correct -m $cool_matrix -o $out_dir/ICE_corrected_$name.cool --filterThreshold -1 5 --correctionMethod ICE 
 corrected_matrix=$out_dir/ICE_corrected_$name.cool
 hicCorrectMatrix diagnostic_plot -m $corrected_matrix -o $out_dir/diagnostic_plot_ICE_$name.png
-
-# #### KR correction; doesn't work? #####
-# # hicCorrectMatrix correct -m $cool_matrix -o $out_dir/KR_corrected_$name.cool --correctionMethod KR 
-# # hicCorrectMatrix diagnostic_plot -m $out_dir/KR_corrected_$name.cool -o $out_dir/diagnostic_plot_KR_$name.png
 
 
 let min_depth=4*res
@@ -111,6 +86,7 @@ let max_depth=10*res
 
 mkdir -p $out_dir/TADS
 
+# this does a PCA and outputs the first and seconds eigenvectors as bigwig files
 hicPCA \
 -m $corrected_matrix \
 --format bigwig \
@@ -119,42 +95,34 @@ hicPCA \
 chmod 755 $out_dir/*
 chmod 755 $out_dir/TADS/*
 
-#### this only takes h5 files?? ####
-# hicFindTADs \
-# -m $corrected_matrix \
-# --outPrefix $out_dir/TADS/ \
-# --correctForMultipleTesting fdr \
-# --thresholdComparisons 0.05 \
-# --minDepth $min_depth \
-# --maxDepth $max_depth
+### this only takes h5 files?? ####
+hicFindTADs \
+-m $corrected_matrix \
+--outPrefix $out_dir/TADS/ \
+--correctForMultipleTesting fdr \
+--thresholdComparisons 0.05 \
+--minDepth $min_depth \
+--maxDepth $max_depth
 
-conda activate pygenometracks
+# this makes a track.ini file
+make_tracks_file \
+--trackFiles \
+$corrected_matrix \
+$out_dir/pca1.bw \
+$out_dir/pca2.bw \
+$out_dir/TADS/_tad_score.bm \
+$out_dir/TADS/_domains.bed \
+$out_dir/TADS/_boundaries.bed \
+--out $out_dir/TADS/tracks.ini
 
+### this looks terrible; need to find a way to adjust #######
+# this plots whatever is specified in the tracks.ini file
+hicPlotTADs \
+--tracks $out_dir/TADS/tracks.ini \
+--region $span \
+-o $out_dir/tads_at_$span.png
 
-# make_tracks_file \
-# --trackFiles \
-# $corrected_matrix \
-# $out_dir/pca1.bw \
-# $out_dir/pca2.bw \
-# $out_dir/TADS/_tad_score.bm \
-# $out_dir/TADS/_domains.bed \
-# $out_dir/TADS/_boundaries.bed \
-# --out $out_dir/TADS/tracks.ini
-
-#### has wonky output, need to adjust ###
-# pyGenomeTracks \
-# --tracks $out_dir/TADS/tracks.ini \
-# --region chr22:10000000-28000000 \
-# -o $out_dir/pygenome_out.png
-
-conda activate hicexplorer
-
-#### this looks terrible #######
-# hicPlotTADs \
-# --tracks $out_dir/TADS/tracks.ini \
-# --region chr22:10000000-28000000 \
-# -o $out_dir/tads.png
-
+# this plots the interaction matrix along with 1st and 2nd eigenvectors
 hicPlotMatrix \
 -m $corrected_matrix \
 --bigwig $out_dir/pca1.bw $out_dir/pca2.bw \
