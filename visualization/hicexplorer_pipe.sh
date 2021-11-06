@@ -19,10 +19,10 @@ help()
     echo "     -n     Input name of sample, e.g. 'primary' or 'liver_met'. Do not use spaces."
     echo "     -o     Specify an output directory name. If the directory does not exist it will be created."
     echo "     -r     Input resolution; conversion of HiC to cool file format requires a resolution argument."
-	echo "     -s     Input span of genome to view with HiCPlotTADs. Use format chr<num>:<start_pos>-<stop_position>"
+    echo "     -s     Input span of genome to view with HiCPlotTADs. Use format chr<num>:<start_pos>-<stop_position>"
     echo " "
-	echo "The following option is optional:"
-	echo "     -t     Pass this option to only plot the TADs statistics (i.e. hicPlotTADs function). If so, the tracks.ini file must already exist in out_dir/TADs and you must still pass the above options."
+    echo "The following option is optional:"
+    echo "     -t     Pass this option to only plot the TADs statistics (i.e. hicPlotTADs function). If so, the tracks.ini file must already exist in out_dir/TADs and you must still pass the above options."
 }
 
 # process input options
