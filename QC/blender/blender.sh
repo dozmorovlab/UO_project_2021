@@ -1,60 +1,57 @@
 #!/usr/bin/bash
-#SBATCH --account=bgmp
-#SBATCH --partition=bgmp
-#SBATCH --output="%x_%j.out"
-#SBATCH --error="%x_%j.err"
-#SBATCH --cpus-per-task=8
-#SBATCH --nodes=1
-#SBATCH --mem=128G
 
 # this should be defined in the environment
-source '../../Utilities/Src/bash/logging.sh'
+source '../../Utilities/Src/Bash/logging.sh'
 
 function usage {
-	echo "usage: blender.sh [-i input-directory]";
+	echo "usage: blender.sh [-f merged_nodups_files] [-o output] [-a account] [-p partition]";
+	echo 
+	echo "[-f merged_nodups_files] 		Juicer text files (comma deliminated)"
+	echo "[-o output] 					Output file"
+	echo "[-a account]					(optional) Slurm account"
+	echo "[-p partition]				(optional) Slurm partition"
 }
 
-while getopts "m:i:h:t:r:" opt
+acct=bgmp
+part=bgmp
+
+while getopts "a:p:f:h:o:" opt
 do
 	case $opt in 
-		i) INPUT=$OPTARG	;;
+		a) acct=$OPTARG		;;
+		p) part=$OPTARG		;;
+		f) files=$OPTARG	;;
+		o) output=$OPTARG	;;
 		h) usage; exit 0 	;;
 		[?]) usage; exit 1	;;
 	esac
 done
 
-test -z $INPUT		&&	{ log	"ERROR" 	"Input Directory not supplied.";	exit 1; }
-test -d $INPUT 		||	{ log	"ERROR" 	"Input Directory does not exist.";	exit 1; }
+test -z $files		&&	{ log	"ERROR" 	"Files not supplied.";	exit 1; }
 
-primary1="${INPUT}/105259/merged_nodups.txt.gz"
-primary2="${INPUT}/102770/merged_nodups.txt.gz"
-primary3="${INPUT}/102933/merged_nodups.txt.gz"
-
-CR1="${INPUT}/105242/merged_nodups.txt.gz"
-CR2="${INPUT}/105246/merged_nodups.txt.gz"
-
-LiverMet1="${INPUT}/100887/merged_nodups.txt.gz"
-LiverMet2="${INPUT}/100889/merged_nodups.txt.gz"
+for file in $(echo $files | tr ',' ' ')  
+do
+	test -f $file 		||	{ log	"ERROR" 	"$file does not exist.";	exit 1; }	
+done
 
 
-test -d "${INPUT}/primary_merged" && rm -rf "${INPUT}/primary_merged"
-mkdir "${INPUT}/primary_merged" 
-sort --parallel=8 -S 64G -m -k2,2d -k6,6d <(gunzip -c $primary1) <(gunzip -c $primary2) <(gunzip -c $primary3) > "${INPUT}/primary_merged/merged_nodups.txt"
+jid=`sbatch <<- BLENDER | grep -oE "\b[0-9]+"
+	#!/usr/bin/bash
+	#SBATCH --account=$acct
+	#SBATCH --partition=$part
+	#SBATCH --output="blender_%j.out"
+	#SBATCH --error="blender_%j.err"
+	#SBATCH --cpus-per-task=8
+	#SBATCH --nodes=1
+	#SBATCH --mem=128G
 
-java -Xmx2g -jar juicer_tools.jar pre -q 1 --r 25000,50000 -j 8 "${INPUT}/primary_merged/merged_nodups.txt" "${INPUT}/primary_merged/inter.hic" hg38 
+	# long format juicer file, sorting by chromosomes
+	sort --parallel=8 -S 64G -m -k2,2d -k6,6d $files > merged_nodups.txt
+	java -Xmx32g -jar juicer_tools.jar pre -q 1 -r 25000,50000 -j 8 "$files" "$output" hg38 
 
-test -d "${INPUT}/CR_merged" && rm -rf "${INPUT}/CR_merged"
-mkdir "${INPUT}/CR_merged" 
-sort --parallel=8 -S 64G -m -k2,2d -k6,6d <(gunzip -c $CR1) <(gunzip -c $CR2) > "${INPUT}/CR_merged/merged_nodups.txt"
+BLENDER`
 
-java -Xmx2g -jar juicer_tools.jar pre -q 1 -r 25000,50000 -j 8 "${INPUT}/CR_merged/merged_nodups.txt" "${INPUT}/CR_merged/inter.hic" hg38
-
-test -d "${INPUT}/livermet_merged" && rm -rf "${INPUT}/livermet_merged"
-mkdir "${INPUT}/livermet_merged" 
-sort --parallel=8 -S 64G -m -k2,2d -k6,6d <(gunzip -c $LiverMet1) <(gunzip -c $LiverMet2) > "${INPUT}/livermet_merged/merged_nodups.txt"
-
-java -Xmx2g -jar juicer_tools.jar pre -q 1 -r 25000,50000 -j 8 "${INPUT}/livermet_merged/merged_nodups.txt" "${INPUT}/livermet_merged/inter.hic" hg38
-
+log "INFO" "Submitted Slurm Job: $jid."
 
 exit 0
 
