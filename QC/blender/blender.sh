@@ -4,9 +4,9 @@
 source '../../Utilities/Src/Bash/logging.sh'
 
 function usage {
-	echo "usage: blender.sh [-f merged_nodups_files] [-o output]";
+	echo "usage: blender.sh [-f merged_nodups_files] [-o output] [-a account] [-p partition]";
 	echo 
-	echo "[-f merged_nodups_files] 		Juicer text files"
+	echo "[-f merged_nodups_files] 		Juicer text files (comma deliminated)"
 	echo "[-o output] 					Output file"
 	echo "[-a account]					(optional) Slurm account"
 	echo "[-p partition]				(optional) Slurm partition"
@@ -29,7 +29,7 @@ done
 
 test -z $files		&&	{ log	"ERROR" 	"Files not supplied.";	exit 1; }
 
-for file in $files
+for file in $(echo $files | tr ',' ' ')  
 do
 	test -f $file 		||	{ log	"ERROR" 	"$file does not exist.";	exit 1; }	
 done
