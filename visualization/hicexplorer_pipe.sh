@@ -46,10 +46,10 @@ do
         r) #specify resolution
             res=$OPTARG;;
 		
-		s) #enter the span of genome to be plotted with HiCPlotTADs
+	s) #enter the span of genome to be plotted with HiCPlotTADs
 			span=$OPTARG;;
 		
-		t) #only output tad stats?
+	t) #only output tad stats?
 			tad_only=$OPTARG;;
 
         \?) #displays invalid option
