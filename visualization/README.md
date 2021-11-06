@@ -23,22 +23,22 @@ Optionally, you may pass the argument `-t` in order to view PC1, PC2, TAD score,
 - `hicexplorer_pipe.sh` outputs the following: 
 
 ├───OutDir/ \
-&nbsp;&nbsp;&nbsp;&nbsp;├───diagnostic_plot_before_ICE_$name.png\
-&nbsp;&nbsp;&nbsp;&nbsp;├───diagnostic_plot_ICE_$name.png\
-&nbsp;&nbsp;&nbsp;&nbsp;├───hic_plot_pca_ICE_$name.png\
-&nbsp;&nbsp;&nbsp;&nbsp;├───tads_at_$span.png\
-&nbsp;&nbsp;&nbsp;&nbsp;├───pca1.bw\
-&nbsp;&nbsp;&nbsp;&nbsp;├───pca2.bw\
-&nbsp;&nbsp;&nbsp;&nbsp;├───$name_$res.cool\
-&nbsp;&nbsp;&nbsp;&nbsp;├───ICE_corrected_$name.cool\
-&nbsp;&nbsp;&nbsp;&nbsp;├───TADS/ \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───_boundaries.bed\
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───_boundaries.gff\
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───_domains.bed\
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───_score.bedgraph\
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───_tad_score.bm\
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───_zscore_matrix.h5\
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───tracks.ini\
+&nbsp;&nbsp;&nbsp;&nbsp;├───**diagnostic_plot_before_ICE_$name.png** (this is a counts distribution of interactions before ICE correction) \
+&nbsp;&nbsp;&nbsp;&nbsp;├───**diagnostic_plot_ICE_$name.png** (this is a counts distribution of interactions after ICE correction)\
+&nbsp;&nbsp;&nbsp;&nbsp;├───**hic_plot_pca_ICE_$name.png** (this is a heat map of the input matrix along with PC1 (top) and PC2 (bottom))\
+&nbsp;&nbsp;&nbsp;&nbsp;├───**tads_at_$span.png** (this is the output described in the `-t` option above)\
+&nbsp;&nbsp;&nbsp;&nbsp;├───**pca1.bw** (principle component 1 bigwig file)\
+&nbsp;&nbsp;&nbsp;&nbsp;├───**pca2.bw** (principle component 2 bigwig file)\
+&nbsp;&nbsp;&nbsp;&nbsp;├───**name_$res.cool** (original hic matrix converted to .cool format)\
+&nbsp;&nbsp;&nbsp;&nbsp;├───**ICE_corrected_$name.cool** (original hic matrix converted to .cool format and corrected)\
+&nbsp;&nbsp;&nbsp;&nbsp;├───**TADS/** \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───**boundaries.bed** (TAD boundaries) \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───**boundaries.gff** (TAD boundaries) \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───**domains.bed** (TAD locations) \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───**score.bedgraph** (TAD separation score) \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───**tad_score.bm** (TAD separation as bedgraph matrix) \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───**zscore_matrix.h5** (z score matrix) \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├───**tracks.ini** (a track for all bedlike files)
 
 ## Issues
 *Currently, the plot `tads_at_$span.png` looks wonky. Need to play with the `tracks.ini` file in order to figure out better plot display settings.
