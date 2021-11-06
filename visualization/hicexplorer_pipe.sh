@@ -63,7 +63,7 @@ done
 
 conda activate hicexplorer
 
-if [ tad_only ]; then
+if [ $tad_only ]; then
     hicPlotTADs \
 	--tracks $out_dir/TADS/tracks.ini \
 	--region $span \
