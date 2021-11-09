@@ -10,7 +10,8 @@ It is used to visualize hic contact matrices, A/B compartments, and TADs.
 ```conda activate hicexplorer```
 
 ## Input
-- The `hicexplorer_pipe.sh` uses a hic matrix file as input. Along with the input file are four other required arguments; you can run `hicexplorer_pipe.sh -h` to see them. The options are:
+- The `hicexplorer_pipe.sh` uses a hic matrix file as input. \
+- Along with the input file are four other required arguments; you can run `hicexplorer_pipe.sh -h` to see them. The options are:
   - -m     Input hic matrix file, including directory
   - -n     Input name of sample, e.g. 'primary' or 'liver_met'. Do not use spaces.
   - -o     Specify an output directory name. If the directory does not exist it will be created.
