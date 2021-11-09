@@ -1,0 +1,92 @@
+---
+title: "ABcompartments"
+date: "`r Sys.Date()`"
+always_allow_html: true
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path = "cache/", fig.path = "img/", cache = F, tidy = T, fig.keep = "high", echo = F, dpi = 100, warnings = F, message = F, comment = NA, warning = F, results = "as.is", fig.width = 10, fig.height = 6, cache.lazy = FALSE) # out.width=700,
+library(pander)
+panderOptions("table.split.table", Inf)
+set.seed(1)
+library(dplyr)
+options(stringsAsFactors = FALSE)
+```
+
+- Input: AB compartment data from  `/home/sequencing/juicer/Mikhail/PDXproject_analysis/07.Arima_samples_juicertools/01.eigenvector_AB`
+- Output: PDF with karyoplots and summary plots. `GoogleDrive/HiC_files/results/Eigenvector/AB_gene_summary_K500.xlsx` with gene- and AB compartment switching summary. "GenesXX" - genes in the corresponding XX compartment switch, ordered by eigenvector difference; "Summary" - per chromosome statistics of compartment switches; "EVs_and_Compartments" - eigenvectors for each region in PR/CR conditions; "RLE" - combined consecutive compartment switches.
+
+
+# Settings
+
+```{r organism}
+# Gene density to assign A/B compartments
+# https://www.biostars.org/p/169171/
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+# Get all human genes
+genomewide.exons <- exons(TxDb.Hsapiens.UCSC.hg38.knownGene)
+genomewide.exons <- keepSeqlevels(genomewide.exons, c(paste0("chr", 1:22)), pruning.mode = "tidy")
+genomewide.genes <- genes(TxDb.Hsapiens.UCSC.hg38.knownGene)
+genomewide.genes <- keepSeqlevels(genomewide.genes, c(paste0("chr", 1:22)), pruning.mode = "tidy")
+# Tile the genome into resolution-specific windows. May use ether GENE density or EXON density. Exon is the default as it gives higher resolution
+genomewide.windows <- tileGenome(seqinfo(genomewide.exons), tilewidth = res_number, cut.last.tile.in.chrom = T)
+# seqnames(genomewide.windows)
+# Number of genes per window
+genomewide.windows$totgenes <- countOverlaps(genomewide.windows, genomewide.exons)
+```
+
+# Check A/B assignment
+
+Check and make the sign of gene-dense eigenvector regions positive.
+
+```{r}
+# basic procedure from biostars: https://www.biostars.org/p/169171/
+# assign A/B compartment to EV based on gene density. "A" compartment assigned to regions with positive/negative EV if gene denisty is higher in positive or negative regions. B assigned to other.
+
+#' Given a data frame with eigenvector, check whether regions with positive sign
+#' have higher gene density and hence are A compartments
+#' @param dataset GRanges-like data frame with the eigenvector EV column. Required
+#' @param chrs chromosomes on which to perform compartment check
+#' Returhs a Pos_is_A/Pos_is_B string, depending on gene density check
+
+assignAB <- function(dataset, chrs = chr) {
+  # Data frame to store the results
+  ABall <- data.frame()
+  # Go through each chromosome
+  for (i in chrs) {
+    ABchr <- subset(dataset, chr == i)
+    genomewide.windows.chr <- subset(genomewide.windows, seqnames == i)
+    # Chromosome-specific eigenvector and tiled windows should be the same length
+    if (length(genomewide.windows.chr) != nrow(ABchr)) {
+      print("Error: mismatch in length of genomewide windows and the eigenvector")
+      break
+    }
+    # Count overlaps
+    genomewide.windows.chr$totgenes <- countOverlaps(genomewide.windows.chr, genomewide.exons)
+    # Append eigenvector
+    genomewide.windows.chr$ev1 <- ABchr$EV
+    # Get gene density and eigenvector data
+    gene_density <- mcols(genomewide.windows.chr)
+    # Calculate gene density in eigenvectors of positive and negative signs
+    posD <- sum(gene_density$totgenes[gene_density$ev1 > 0 & !is.na(gene_density$ev1)]) / sum(gene_density$ev1 > 0 & !is.na(gene_density$ev1))
+    negD <- sum(gene_density$totgenes[gene_density$ev1 < 0 & !is.na(gene_density$ev1)]) / sum(gene_density$ev1 < 0 & !is.na(gene_density$ev1))
+    # Append AB compartment assignment
+    ABchr$compartment <- NA # Initialize column
+    ABchr$compartment[ABchr$EV > 0] <- ifelse(posD > negD, "A", "B")
+    ABchr$compartment[ABchr$EV < 0] <- ifelse(posD < negD, "A", "B")
+    # Change sign, if necessary
+    ABchr$EV <- ifelse(ABchr$EV < 0 & ABchr$compartment == "A", ABchr$EV * -1, ifelse(ABchr$EV > 0 & ABchr$compartment == "B", ABchr$EV * -1, ABchr$EV))
+    # Append results
+    ABall <- rbind(ABall, ABchr)
+  }
+  dataset <- ABall
+}
+```
