@@ -28,7 +28,7 @@ This directory will determine the similarities of the replicates for the PR, LM,
 ## Usage (Command Line)
 1_hicrep.sh
 ```./1_hicrep.sh -d=/absolute/dir/path -o=/absolute/output/dir ```
-\br
+<br />
 2_20211010_sccheatmap_mds.R
 ```./2_20211010_sccheatmap_mds.R```
 
