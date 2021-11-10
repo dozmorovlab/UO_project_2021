@@ -20,8 +20,6 @@ This directory will determine the similarities of the replicates for the PR, LM,
 2. 2_20211010_sccheatmap_mds.R  
   ###HARDCODED###  
   Description: This script will create a pairwise comparison heatmap and an MDS plot using the outputs from 1_hicrep.sh (these files need to be located in the same directory). The plots can be used to determine how similar the replicates are. 
-  
-  The heatmap will show how well each samples are correlated with another sample. The script will also output an MDS plot to show the similarities between samples.
   - **Input**
     - This script takes in the .txt file(s) from 1_hicrep.sh
   - **Output**
@@ -29,10 +27,10 @@ This directory will determine the similarities of the replicates for the PR, LM,
 
 ## Usage (Command Line)
 1_hicrep.sh
-- ```./1_hicrep.sh -d=/absolute/dir/path -o=/absolute/output/dir ```
-
+```./1_hicrep.sh -d=/absolute/dir/path -o=/absolute/output/dir ```
+\br
 2_20211010_sccheatmap_mds.R
-- ```./2_20211010_sccheatmap_mds.R```
+```./2_20211010_sccheatmap_mds.R```
 
 ## Issues
 *2_20211010_sccheatmap_mds.R is hardcoded.
