@@ -58,7 +58,7 @@ done
 
 mkdir -p $out_dir #should change to relative to paths
 
-#converts hic matrices to .cool files and normalizes via ICE method
+#converts hic matrices to .cool files and corrects via ICE method
 ls -1 $data_dir |grep '.hic' |while read file;
 do \
 hicConvertFormat \
@@ -73,7 +73,7 @@ correct -m $out_dir/$(echo $file | cut -f1 -d.)_res_$res.cool \
 --filterThreshold -1 5 --correctionMethod ICE;
 done
 
-
+# this makes the distance decay plots with corrected cool files
 hicPlotDistVsCounts \
 --matrices $out_dir/* \
 -o $out_dir/$plot_name.png \
