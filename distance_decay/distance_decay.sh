@@ -1,4 +1,4 @@
-s#!/bin/bash
+#!/bin/bash
 #SBATCH --partition=bgmp
 #SBATCH --account=bgmp
 #SBATCH --job-name=distance_decay
