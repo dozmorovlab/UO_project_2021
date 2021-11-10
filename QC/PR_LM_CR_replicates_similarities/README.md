@@ -36,4 +36,4 @@ This directory will determine the similarities of the replicates for the PR, LM,
 ```./2_20211010_sccheatmap_mds.R```
 
 ## Issues
-*2_20211010_sccheatmap_mds.R is hardcoded.
+2_20211010_sccheatmap_mds.R is hardcoded.
