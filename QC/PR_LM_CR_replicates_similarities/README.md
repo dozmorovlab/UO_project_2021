@@ -7,7 +7,7 @@ This directory will determine the similarities of the replicates for the PR, LM,
 
 ## Scripts
 
-1_hicrep.sh  
+- 1_hicrep.sh  
   Description: This script will perform pairwise comparisons to determine a stratum-adjusted correlation coefficient (SCC) scores. The script will take .cool file(s) only and return multiple text files with the SCC scores for each chromosome. The command ```hicrep``` will run with the following options: --h 1 and --dBPMax 500000.
   - **Input**
     - This script takes in the directory that contains .cool file(s) as the input.
@@ -17,7 +17,7 @@ This directory will determine the similarities of the replicates for the PR, LM,
   - **Output**
     - The output of the `1_hicrep.sh` will result in .txt file(s) that contain SCC scores for each chromosome.
 
-2_20211010_sccheatmap_mds.R  
+- 2_20211010_sccheatmap_mds.R  
   ###HARDCODED###  
   Description: This script will create a pairwise comparison heatmap and an MDS plot using the outputs from 1_hicrep.sh (these files need to be located in the same directory). The plots can be used to determine how similar the replicates are. 
   - **Input**
