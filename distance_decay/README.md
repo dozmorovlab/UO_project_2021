@@ -1,6 +1,6 @@
 # Distance-Decay Plots
 \
-This script checks the quality of the biological replicates by using `HiCExplorer 3.0` [hicPlotDistVsCounts]() to create distance-decay plots; the plots should look near-identical for biological replicates.
+This script checks the quality of the biological replicates by using `HiCExplorer 3.0`. First the `.hic` matrices are converted to `.cool` files via [hicConvertFormat](https://hicexplorer.readthedocs.io/en/latest/content/tools/hicConvertFormat.html) and then are ICE corrected via [hicCorrectMatrix](https://hicexplorer.readthedocs.io/en/latest/content/tools/hicCorrectMatrix.html). Lastly the corrected cool files are fed into [hicPlotDistVsCounts](https://hicexplorer.readthedocs.io/en/latest/content/tools/hicPlotDistVsCounts.html) to create distance-decay plots; the plots should look near-identical for biological replicates. 
 \
 \
 
