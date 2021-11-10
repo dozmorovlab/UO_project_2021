@@ -1,8 +1,9 @@
-﻿## Distance-Decay Plots
+# Distance-Decay Plots
 \
 This script checks the quality of the biological replicates by using `HiCExplorer 3.0` [hicPlotDistVsCounts]() to create distance-decay plots; the plots should look near-identical for biological replicates.
 \
 \
+
 ## Setup
 First, create the appropriate environment by saving the file [environment.yml](./environment.yml), then run the command:
 \
