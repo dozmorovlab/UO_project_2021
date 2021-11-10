@@ -25,11 +25,14 @@ This directory will determine the similarities of the replicates for the PR, LM,
   - **Output**
     - The output is a heatmap (.jpg) and an MDS plot (.jpg).
 
-## Usage (Command Line)
+## Usage Example (Command Line)
 1_hicrep.sh
+<br />
 ```./1_hicrep.sh -d=/absolute/dir/path -o=/absolute/output/dir ```
 <br />
+<br />
 2_20211010_sccheatmap_mds.R
+<br />
 ```./2_20211010_sccheatmap_mds.R```
 
 ## Issues
