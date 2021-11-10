@@ -4,3 +4,9 @@
 
 Ideally, replicates in each group will be similar to each other. Previous research shows that drug resistant and metastatic tumors will have modified three-dimensional changes in their chromatin, so we expect groups to be separate from each other. We can measure differences in replicates using Principle Component Analysis, which the package FAN-C has an implementation for hic-matrices. This statistical analysis is ideal to maintain data integrity while also reducing the dimensions in our data to see similarity of replicates in each group and differences between groups. Additionally, we use multidimensional scaling to measure distances between our replicates to measure similarities.
 
+
+**Directory Structure**
+├── StratumAdjustedCorrelationCoefficients # Scripts and plots 
+├── PCA                     # Scripts for PCA plotting
+├── Distance Decay          # Distance decay scripts
+└── README.md
