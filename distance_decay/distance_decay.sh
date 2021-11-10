@@ -22,7 +22,7 @@ help()
     echo "     -d     Input the directory containing the hic files to be plotted. THIS SCRIPT WILL PLOT ALL MATRICES IN THIS DIRECTORY!"
     echo "     -r     Input resolution; conversion of HiC to cool file format requires a resolution argument."
     echo "     -o     Specify an output directory name (DIRECTORY MUST BE EMPTY). If the directory does not exist it will be created."
-	echo "     -p     Input plot name, used for output distance decay plot"
+    echo "     -p     Input plot name, used for output distance decay plot"
     echo " "
 }
 
