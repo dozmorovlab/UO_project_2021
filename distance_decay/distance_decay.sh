@@ -58,15 +58,15 @@ done
 
 mkdir -p $out_dir #should change to relative to paths
 
-# ls -1 $data_dir |grep '.hic' |while read file;
-# do \
-# hicConvertFormat \
-# --matrices $data_dir/$file \
-# --inputFormat hic \
-# --outFileName $out_dir/$(echo $file | cut -f1 -d.)_res.cool \
-# --outputFormat cool \
-# --resolutions $res;
-# done
+ls -1 $data_dir |grep '.hic' |while read file;
+do \
+hicConvertFormat \
+--matrices $data_dir/$file \
+--inputFormat hic \
+--outFileName $out_dir/$(echo $file | cut -f1 -d.)_res.cool \
+--outputFormat cool \
+--resolutions $res;
+done
 
 
 hicPlotDistVsCounts \
