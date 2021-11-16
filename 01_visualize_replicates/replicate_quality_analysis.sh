@@ -16,6 +16,7 @@ function usage {
 	echo 
 	echo "[-d data-directory]			Root directory where data exists. All data should be located under this parent."
 	echo "[-f input-file] 				CSV file containing hic files to visualize. See Readme for more information."
+	echo "[-r resolutions]				Resolutions for Hi-C files (comma deliminated)"
 	echo "[-a account]					(optional) Slurm account"
 	echo "[-p partition]				(optional) Slurm partition"
 }
@@ -26,15 +27,16 @@ then
 	exit 1
 fi 
 
-while getopts "a:p:f:d:h:" opt
+while getopts "a:p:f:d:r:h:" opt
 do
 	case $opt in 
 		a) slurm_account=$OPTARG; 	log "DEBUG" "Slurm account updated to: $slurm_account"		;;
 		p) slurm_partition=$OPTARG;	log "DEBUG" "Slurm partition updated to: $slurm_partition" 	;;
 		d) datadir=$OPTARG; 		log "DEBUG" "Data directory: $datadir" 	;;
 		f) metadata=$OPTARG; 		log "DEBUG" "Metadata: $metadata"		;;
+		r) resolutions=$OPTARG;		log "DEBUG"	"Resolutions: $resolutions"	;;
 		h) usage; exit 0 	;;
-		[?]) usage; exit 1	;;
+		\?) usage; exit 1	;;
 	esac
 done
 
@@ -49,26 +51,6 @@ test -f $metadata 	&& metadata="$current_directory/$metadata" || {
 		exit 1; 
 	}
 }
-
-
-jid=`sbatch <<- CREATE_HIC | grep -oE "\b[0-9]+"
-	#!/usr/bin/bash
-	#SBATCH --account=$acct
-	#SBATCH --partition=$part
-	#SBATCH --output="blender_%j.out"
-	#SBATCH --error="blender_%j.err"
-	#SBATCH --cpus-per-task=8
-	#SBATCH --nodes=1
-	#SBATCH --mem=128G
-
-	java -Xmx32g -jar juicer_tools.jar pre -q 1 -r 25000,50000 -j 8 "$files" "$output" hg38 
-
-CREATE_HIC`
-
-
-
-
-
 
 # 1) Convert to cool files
 
