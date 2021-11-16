@@ -25,4 +25,4 @@ venv/Scripts/activate.bat
 ### Output
 
 ![PCA](output/week1.png)</br>
-**Figure 1.** Principle Component Analysis (PCA) from week1 hic data.
+**Figure 1.** Principle Component Analysis (PCA) from original week1 data. 
