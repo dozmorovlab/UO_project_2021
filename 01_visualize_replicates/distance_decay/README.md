@@ -1,37 +1,27 @@
-﻿## Distance-Decay Plots
+# Distance-Decay Plots
 \
-We use distance decay plots to visualize interaction counts in terms of distance between genes. As distance increases, it is expected the number of interaction counts will decrease. This is because genes closer in proximity to one another in coordinate space are more likely to interact with each other than ones that are further apart.
-\
-To check the quality of the biological replicates, use `HiCExplorer 3.0` to create distance-decay plots. The plots should look near-identical for biological replicates.
-\
-\
-First, create the appropriate environment by saving the file [environment.yml](./environment.yml), then run commands:
+This script checks the quality of the biological replicates by using `HiCExplorer 3.0`. 
+- First the `.hic` matrices are converted to `.cool` files via [hicConvertFormat](https://hicexplorer.readthedocs.io/en/latest/content/tools/hicConvertFormat.html).
+- Then the cool files are ICE corrected via [hicCorrectMatrix](https://hicexplorer.readthedocs.io/en/latest/content/tools/hicCorrectMatrix.html). 
+- Lastly the corrected cool files are fed into [hicPlotDistVsCounts](https://hicexplorer.readthedocs.io/en/latest/content/tools/hicPlotDistVsCounts.html) to create distance-decay plots; the plots should look near-identical for biological replicates. 
+
+## Setup
+First, create the appropriate environment by saving the file [environment.yml](./environment.yml), then run the command:
 \
 ```conda env create -f environment.yml```
 \
+Check to see that the environment works by running: \
 ```conda activate hicexplorer```
-\
-\
-\
-If you have `.hic` files, you will need to convert them to `.cool` files through HiCExplorer's [hicConvertFormat](./scripts/cool_converter.sh) function. 
-- Input: files with format `<name>.hic`.
-- Output: files will be `<name>_resolution_<resolution>.cool` with the specified resolution in specified directory.
 
-\
-\
-Then, use the resulting `.cool` files with HiCExplorer's [hicPlotDistVsCounts](./scripts/hicPlotDistVsCounts.sh) function.
-- Input: files with format `<name>.cool`.
-- Output: distance decay plots.
-\
-\
-Example output is below for carboplatin resistant, liver metastatic, and primary tumors.
-\
-![Primary](./plots/distance_decay_primary.png)
-![CR](./plots/distance_decay_CR.png)
-![LiverMet](./plots/distance_decay_LiverMet.png)
-\
-\
-\
-\
-*note: to improve this directory, specifically the scripts, the file structure arguments still need to be generalized (e.g. replace <input filename> with some commands).*
+## Input
+The script `distance_decay.sh` takes hic matrix files as input, along with the following required four options:
 
+- -d     Input the directory containing the hic files to be plotted. THIS SCRIPT WILL PLOT ALL MATRICES IN THIS DIRECTORY!"
+- -r     Input resolution; conversion of HiC to cool file format requires a resolution argument."
+- -o     Specify an output directory name (DIRECTORY MUST BE EMPTY). If the directory does not exist it will be created."
+- -p     Input plot name, used for output distance decay plot"
+
+Likewise, you may run `./distance_decay.sh -h` to see the above input options. 
+
+## Output
+The script `distance_decay.sh` outputs three `.cool` files and a distance decay plot called `<plot_name>.png` in the directory `<out_dir>`.
