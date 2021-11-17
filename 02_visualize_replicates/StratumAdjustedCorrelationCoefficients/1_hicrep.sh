@@ -7,8 +7,7 @@
 #SBATCH --nodes=1               ### Number of nodes needed for the job
 #SBATCH --ntasks-per-node=8     ### Number of tasks to be launched per Node
 #SBATCH --account=bgmp      ### Account used for job submission
-#SBATCH --mail-user='jlee26@uoregon.edu'
-#SBATCH --mail-type=END,FAIL
+
 export OMP_NUM_THREADS=8
 conda activate VCU
 
