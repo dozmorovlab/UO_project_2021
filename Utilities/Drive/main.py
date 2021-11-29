@@ -47,6 +47,14 @@ def GetDriveItems(service, folder_id):
     return results.get('files', [])
 
 
+def GetFile(service, file_id):
+    results = service.files().list(
+        fields="files(id, name, mimeType)",
+        q=f"'{file_id}' = id"
+    ).execute()
+    return results.get('files', [])
+
+
 @click.group()
 @click.option(
     '--token', '-t',
@@ -118,7 +126,37 @@ def _recurse_download(service, folder_id, directory):
 
 @main.command()
 @click.option(
-    '--folder-id', '-fid',
+    '--file-id', '-file_id',
+    type=Fid(),
+    help="File ID",
+    default=DEFAULT_FID,
+)
+@click.option(
+    '--destination', '-d',
+    type=click.Path(),
+    default=f"{os.getcwd()}",
+    help="Download File."
+)
+@click.pass_context
+def download_file(ctx, file_id, destination):
+    service = build('drive', 'v3', credentials=ctx.obj['token']) 
+    output = os.path.expanduser(destination)
+    
+    request = service.files().get_media(fileId=file_id)
+    fh = io.FileIO(f"{destination}/{file_id}.download", 'w')
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while done is False:
+        status, done = downloader.next_chunk()
+        print("Download %d%%." % int(status.progress() * 100))
+
+
+    print("Download %d%%." % int(status.progress() * 100))
+
+
+@main.command()
+@click.option(
+    '--file-id', '-file',
     type=Fid(),
     help="Folder ID",
     default=DEFAULT_FID,
@@ -129,11 +167,35 @@ def _recurse_download(service, folder_id, directory):
     default=f"{os.getcwd()}",
     help="Download diretory."
 )
-@click.pass_context
 def download(ctx, folder_id, destination):
     service = build('drive', 'v3', credentials=ctx.obj['token']) 
     output = os.path.expanduser(destination)
     _recurse_download(service, folder_id, output)
+
+
+@main.command()
+@click.option(
+    '--file-id', '-file-id',
+    type=Fid(),
+    help="File ID",
+    default=DEFAULT_FID,
+)
+@click.pass_context
+def check_file(ctx, file_id):
+    """
+    Check if file exists.
+    """
+
+    service = build('drive', 'v3', credentials=ctx.obj['token'])
+    items = GetFile(service, file_id)
+
+    if not items:
+        print('No files found.')
+    else:
+        print(f"Found {file_id}.")
+        for item in items:
+            print(item)
+            #print(u'{0} ({1}) {2}'.format(item['name'], item['id'], items['mimeType']))
 
 
 @main.command()

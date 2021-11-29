@@ -56,8 +56,10 @@ test -f $metadata 	&& metadata="$current_directory/$metadata" || {
 
 test -d $cool_directory || { log "DEBUG" "Creating directory for cool files: $cool_directory"; mkdir $cool_directory; }
 
-ls -1 $data_dir |grep '.hic' |while read file;
-do \
+
+
+ls -1 $data_dir | grep '.hic' | while read file;
+do
 hicConvertFormat \
 --matrices $data_dir/$file \
 --inputFormat hic \
