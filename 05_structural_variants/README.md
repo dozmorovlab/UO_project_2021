@@ -108,6 +108,29 @@ This portion cannot be completed at this time because we do not have data of nor
 
 As mentioned before, stuctural variants could be deletions, inversions or translocations. In this section, we assemble a text file with possible SVs given breakpoints along the chromosmome arms. To find these breaks and create the requisite breakpoint text file, we used [hic_breakfinder](https://github.com/dixonlab/hic_breakfinder). 
 
+### Update
+
+The issue is almost resolved thanks to a [here](https://github.com/dixonlab/hic_breakfinder/issues/10) by our instructor Jason Sydes. 
+```bash
+conda create -n hic_breakfinder bamtools=2.3.0 eigen=3.3.9
+conda activate hic_breakfinder
+
+make clean
+./configure CPPFLAGS="-I /projects/bgmp/bpalmer3/miniconda3/envs/hic_breakfinder/include/bamtools -I /projects/bgmp/bpalmer3/miniconda3/envs/hic_breakfinder/include/eigen3/" LDFLAGS="-L/projects/bgmp/bpalmer3/miniconda3/envs/hic_breakfinder/lib/"
+make
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/sydes/miniconda3/envs/20211130_hic_breakfinder/lib
+
+# Testing it, and it works (well, shows the help prompt at least):
+./src/hic_breakfinder
+./hic_breakfinder
+```
+
+
+There is one function that still cannot find the the implementation.
+
+
+### Previous Issue
+
 Dependencies for hic_breakfinder include Eigen and bamtools. The following were loaded using lmod:
 ```bash
 module load racs-eb 	# internal, dependency for Eigen to load on talapas HPC
