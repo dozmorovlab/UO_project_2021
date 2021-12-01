@@ -104,4 +104,55 @@ Primary:
 
 This portion cannot be completed at this time because we do not have data of normal cells. The purpose of this section seems to be finding the impacts of the found CNVs on contacts maps from a healthy cell. 
 
+## Assemble Complex Structural Varinants
 
+As mentioned before, stuctural variants could be deletions, inversions or translocations. In this section, we assemble a text file with possible SVs given breakpoints along the chromosmome arms. To find these breaks and create the requisite breakpoint text file, we used [hic_breakfinder](https://github.com/dixonlab/hic_breakfinder). 
+
+Dependencies for hic_breakfinder include Eigen and bamtools. The following were loaded using lmod:
+```bash
+module load racs-eb 	# internal, dependency for Eigen to load on talapas HPC
+module load bamtools/2.5.1
+```
+
+Eigen is also a dependency, but is only needed for the source. The repository was cloned:
+```bash
+git clone https://gitlab.com/libeigen/eigen.git
+```
+
+And the final configuration command was performed per the [readme](https://github.com/dixonlab/hic_breakfinder/blob/master/README):
+
+```bash
+./configure CPPFLAGS="-I /packages/bamtools/2.5.1/include -I ~/projects/eigen" LDFLAGS="-L/packages/bamtools/2.5.1/lib64/libbamtools.a"
+```
+
+`make` was finally called to compile hic_breakfinder using gcc version 7.3.0 (GCC).
+```bash
+make # using gcc version 7.3.0 (GCC)
+```
+
+This resulted in a missing references error, similar to the one reporte [here](https://github.com/dixonlab/hic_breakfinder/issues/10). Per the final comment, an older compiler version is advisable. The exact compiler could not be found on talapas, so a close version is used (`gcc/4.8.2`).
+
+The environment was reset and the following were loaded using lmod:
+
+```bash
+module load prl
+module load gcc/4.8.2 	# Reported by github issue
+```
+
+Compiler `gcc/4.8.2` was used to build `bamtools` to prevent compatability issues.
+
+```bash
+git clone https://github.com/pezmaster31/bamtools.git
+```
+
+After compiling `libbamtools.a`, the hic breakfinder compile steps were followed again with this updated command:
+
+```bash
+./configure CPPFLAGS="-I ~/projects/bamtools/src -I ~/projects/eigen" LDFLAGS="-L~/projects/bamtools/src/libbamtools.a"
+```
+
+```bash
+make # gcc/4.8.2 
+```
+
+This unfortunately is causing the same errors that were seen previously. We are currently working with our instructors on this issue. 
