@@ -1,6 +1,6 @@
 # Differential TADS
 
-The script `diff_TADs.sh` uses hic matrices to find statistically different TADs between two hic matrices.
+The script `diff_TADs.sh` uses [HiC Explorer](https://hicexplorer.readthedocs.io/en/latest/index.html) functions on hic matrices to find statistically different TADs between two samples.
 
 ## Input
 - Hic Matrices
