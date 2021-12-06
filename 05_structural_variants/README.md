@@ -2,7 +2,7 @@
 
 ## Background
 
-Structural variants can be detected in contact maps using ![NeoLoopFinder](https://github.com/XiaoTaoWang/NeoLoopFinder). Structural variants leads to modification in chromatin organization which can lead to structural changes. Here we effectively use the structural changes identified in the generated contact maps to determine what structural variants occured the NeoLoopFinder package.
+Structural variants can be detected in contact maps using [NeoLoopFinder](https://github.com/XiaoTaoWang/NeoLoopFinder). Structural variants leads to modification in chromatin organization which can lead to structural changes. Here we effectively use the structural changes identified in the generated contact maps to determine what structural variants occured the NeoLoopFinder package.
 
 ## Package Citation
 
@@ -108,28 +108,87 @@ This portion cannot be completed at this time because we do not have data of nor
 
 As mentioned before, stuctural variants could be deletions, inversions or translocations. In this section, we assemble a text file with possible SVs given breakpoints along the chromosmome arms. To find these breaks and create the requisite breakpoint text file, we used [hic_breakfinder](https://github.com/dixonlab/hic_breakfinder). 
 
-### Update
+### Breakfinder
 
-The issue is almost resolved thanks to a [here](https://github.com/dixonlab/hic_breakfinder/issues/10) by our instructor Jason Sydes. 
+See the `Update` section below for working code.
+
+#### Setup
+
+IMPORTANT: Follow the update header for the complete working setup.
+
+##### Update
+
+The issue is resolved thanks to a post [here](https://github.com/dixonlab/hic_breakfinder/issues/10) by our instructor Jason Sydes. 
+
+Start by removing interfering modules (this mostly applies from loading bamtools below earlier, which interferes with the build process).
+```bash
+module purge 
+```
+
+It is recommended to go comment out the following line in ```src/hic_breakfinder.cpp```.
+```c++
+  91       if (refs.at(bam.RefID).RefName != last_chr) { 
+  92         // cerr << "Going through " << refs.at(bam.RefID).RefName << now\n";
+  93         last_chr = refs.at(bam.RefID).RefName;
+  94       } 
+```
+
+Then run the following code:
 ```bash
 conda create -n hic_breakfinder bamtools=2.3.0 eigen=3.3.9
-conda activate hic_breakfinder
+conda activate 20211130_hic_breakfinder
 
 make clean
-./configure CPPFLAGS="-I /projects/bgmp/bpalmer3/miniconda3/envs/hic_breakfinder/include/bamtools -I /projects/bgmp/bpalmer3/miniconda3/envs/hic_breakfinder/include/eigen3/" LDFLAGS="-L/projects/bgmp/bpalmer3/miniconda3/envs/hic_breakfinder/lib/"
+./configure CPPFLAGS="-I /home/bpalmer3/projects/miniconda3/envs/20211130_hic_breakfinder/include/bamtools -I /home/bpalmer3/projects/miniconda3/envs/20211130_hic_breakfinder/include/eigen3" LDFLAGS="-L/home/bpalmer3/projects/miniconda3/envs/20211130_hic_breakfinder/lib"
 make
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/sydes/miniconda3/envs/20211130_hic_breakfinder/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/bpalmer3/projects/miniconda3/envs/20211130_hic_breakfinder/lib
 
 # Testing it, and it works (well, shows the help prompt at least):
 ./src/hic_breakfinder
 ./hic_breakfinder
 ```
 
+Note: See `Previous Issue` below for previous failed attempt.
 
-There is one function that still cannot find the the implementation.
+
+Breakfinder requires three input parameters:
+
+1. The bam file
+2. Inter-chromosomal expectation file
+3. Intra-chromosomal expectation file
+
+The expectation files are described in this [issue](https://github.com/dixonlab/hic_breakfinder/issues/7). They seem to be contacts for Hg38, and are generated using a combination of Hi-C matrices from multiple cell types.
+
+The files are accessible online [here](https://salkinstitute.app.box.com/s/m8oyv2ypf8o3kcdsybzcmrpg032xnrgx). Note that we only need Hg38 so it may save you time to just download those files.
+
+Command for livermet:
+```bash
+./hic_breakfinder --bam-file ~/vcu_data/week2/downloads/W30_LiverMet.fastq.gz.bam --exp-file-inter ../expect/inter_expect_1Mb.hg38.txt --exp-file-intra ../expect/intra_expect_100kb.hg38.txt --name livermet
+```
+
+Command for primary:
+```bash
+./hic_breakfinder --bam-file ~/vcu_data/week2/downloads/W30_Primary.fastq.gz.bam --exp-file-inter ../expect/inter_expect_1Mb.hg38.txt --exp-file-intra ../expect/intra_expect_100kb.hg38.txt --name primary
+```
+
+The SV breakpoints are reformatted with `prepare-SV-breakpoints.py`:
+```bash
+./prepare-SV-breakpoints.py 
+```
+
+Assemble complex structural variants for livermet tumor:
+```bash
+./assemble-complexSVs \
+	--output livermet \
+	--hic ~/projects/vcu/05_structural_variants/cool_files/all_reps.hic_50000.cool \
+	--break-points ~/projects/hic_breakfinder/src/livermet_100kb.breaks.txt \
+	--nproc 8
+```
 
 
-### Previous Issue
+
+
+##### Previous Issue
 
 Dependencies for hic_breakfinder include Eigen and bamtools. The following were loaded using lmod:
 ```bash
@@ -179,3 +238,7 @@ make # gcc/4.8.2
 ```
 
 This unfortunately is causing the same errors that were seen previously. We are currently working with our instructors on this issue. 
+
+
+
+
