@@ -110,8 +110,6 @@ As mentioned before, stuctural variants could be deletions, inversions or transl
 
 ### Breakfinder
 
-See the `Update` section below for working code.
-
 #### Setup
 
 IMPORTANT: Follow the update header for the complete working setup.
@@ -124,6 +122,8 @@ Start by removing interfering modules (this mostly applies from loading bamtools
 ```bash
 module purge 
 ```
+
+You will quickly find that there is too much output. I ended up removing some of the `std::cerr` statements, such as below:
 
 It is recommended to go comment out the following line in ```src/hic_breakfinder.cpp```.
 ```c++
@@ -171,17 +171,24 @@ Command for primary:
 ./hic_breakfinder --bam-file ~/vcu_data/week2/downloads/W30_Primary.fastq.gz.bam --exp-file-inter ../expect/inter_expect_1Mb.hg38.txt --exp-file-intra ../expect/intra_expect_100kb.hg38.txt --name primary
 ```
 
+The jobs were submitted as slurm scripts. The original runs resulted in `oom-kill` errors, so the memory for the job was updated to 128G. With these updates, the jobs completed successfully in about a day. 
+
 The SV breakpoints are reformatted with `prepare-SV-breakpoints.py`:
 ```bash
-./prepare-SV-breakpoints.py 
+./prepare-SV-breakpoints.py livermet.breaks.txt livermet.breaks.mod.txt
 ```
+
+```bash
+./prepare-SV-breakpoints.py primary.breaks.txt primary.breaks.mod.txt
+```
+
 
 Assemble complex structural variants for livermet tumor:
 ```bash
 ./assemble-complexSVs \
 	--output livermet \
 	--hic ~/projects/vcu/05_structural_variants/cool_files/all_reps.hic_50000.cool \
-	--break-points ~/projects/hic_breakfinder/src/livermet_100kb.breaks.txt \
+	--break-points ~/projects/hic_breakfinder/src/livermet.breaks.mod.txt \
 	--nproc 8
 ```
 
