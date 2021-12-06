@@ -66,23 +66,21 @@ color_options=("NA" "BLUE" "RED" "GREEN" "YELLOW")
 friendly_names=()
 files=()
 
-while IFS=',' read -r id tumor
+while IFS=',' read -r id tumor folder
 do
-	lc=$(($lc + 1))
-	log "DEBUG" "line $lc: $sample_name $id $perc_unmapped $cell $tumor"
-	if [[ $lc > 1 ]]
-	then
-		file="$DIRECTORY/$id/$id.hic"
-		test -f $file || { log "FATAL" "$file does not exist"; exit 1; } 
-		files+=("$DIRECTORY/$id/$id.hic")
-		test -z "${!tumor}" && { 
-			eval "declare $tumor=1"
-			color_idx=$((color_idx + 1)); 
-			log "DEBUG" "Declared $tumor and incremented color_idx --> $color_idx";
-		}
-		colors+=(${color_options[$color_idx]})
-		friendly_names+=("$tumor")
-	fi
+	log "DEBUG" "$id $tumor $folder"
+
+	file="$DIRECTORY/$folder/$id.hic"
+	test -f $file || { log "FATAL" "$file does not exist"; exit 1; } 
+	files+=($file)
+	test -z "${!tumor}" && { 
+		eval "declare $tumor=1"
+		color_idx=$((color_idx + 1)); 
+		log "DEBUG" "Declared $tumor and incremented color_idx --> $color_idx";
+	}
+	colors+=(${color_options[$color_idx]})
+	friendly_names+=("$tumor")
+
 done < $METADATA
 
 log "DEBUG" "Files: ${files[*]}"
@@ -94,4 +92,4 @@ log "DEBUG" "Friendly Names: ${friendly_names[*]}"
 test -d $OUTPUT	&& rm -rf $OUTPUT
 mkdir $OUTPUT
 
-/usr/bin/time -v fanc pca -n ${friendly_names[*]} -Z -s $s -c ${colors[*]} -p "$OUTPUT/$$.png"  ${files[*]} "$OUTPUT/$$.pca"
+/usr/bin/time -v fanc pca -n ${friendly_names[*]} -Z -s $SAMPLE_SIZE -c ${colors[*]} -p "$OUTPUT/$$.png"  ${files[*]} "$OUTPUT/$$.pca"
