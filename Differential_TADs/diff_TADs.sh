@@ -157,7 +157,7 @@ mv $out_dir/differential_TAD_accepted.diff_tad $out_dir/differential_TAD_accepte
 mv $out_dir/differential_TAD_rejected.diff_tad $out_dir/differential_TAD_rejected.bed
 
 
-# cp tracks.ini ./$out_dir
+cp tracks.ini ./$out_dir
 
 # uses tracks.ini file to plot hic matrices and TADs (tracks.ini file needs to be manually created)
 pyGenomeTracks \
