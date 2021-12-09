@@ -91,18 +91,18 @@ hicCorrectMatrix correct \
 --correctionMethod ICE
 
 
-# finds PCA 1 and 2 for treatment matrix
-hicPCA \
--m $treatment_corrected_matrix \
---format bigwig \
--o $out_dir/treatment_pca1.bw $out_dir/treatment_pca2.bw
+# # finds PCA 1 and 2 for treatment matrix
+# hicPCA \
+# -m $treatment_corrected_matrix \
+# --format bigwig \
+# -o $out_dir/treatment_pca1.bw $out_dir/treatment_pca2.bw
 
 
-# finds PCA 1 and 2 for control matrix
-hicPCA \
--m $control_corrected_matrix \
---format bigwig \
--o $out_dir/control_pca1.bw $out_dir/control_pca2.bw
+# # finds PCA 1 and 2 for control matrix
+# hicPCA \
+# -m $control_corrected_matrix \
+# --format bigwig \
+# -o $out_dir/control_pca1.bw $out_dir/control_pca2.bw
 
 
 # min depth: Minimum window length (in bp) to be considered to the left and to the right of each Hi-C bin. This number should be at least 3 times as large as the bin size of the Hi-C matrix
