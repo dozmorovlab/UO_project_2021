@@ -5,7 +5,8 @@ Determine compartmental swtiches between primary and livermet using HOMER.
 HOMER can be downloaded using the following website:
 http://homer.ucsd.edu/homer/introduction/install.html
 
-In general, followed http://homer.ucsd.edu/homer/interactions2/quickndirty.html to use HOMER. \n
+In general, followed http://homer.ucsd.edu/homer/interactions2/quickndirty.html to use HOMER.
+
 For finding A/B compartments, followed a more detailed outline: http://homer.ucsd.edu/homer/interactions2/HiCpca.html
 
 ## Scripts
