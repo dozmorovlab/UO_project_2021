@@ -30,13 +30,13 @@ control_name=primary
 res=25000
 
 # out directory
-out_dir=./diff_TADs
+out_dir=./diff_TADs_$res
 
 # path to treatment hic matrix
 treatment_hic_matrix=/projects/bgmp/shared/2021_projects/VCU/week2/livermet_merged/inter_25_50.hic
 
 # path to control hic matrix
-control_hic_matrix=/projects/bgmp/shared/2021_projects/VCU/week2/primary_merged/inter_25_50.hic
+control_hic_matrix=/projects/bgmp/shared/2021_projects/VCU/week2/primary_merged/sorted/primary_sorted_half1.hic
 
 
 # the following lines do not need changing
