@@ -122,7 +122,7 @@ hicFindTADs \
 -m $treatment_corrected_matrix \
 --outPrefix $out_dir/treatment \
 --correctForMultipleTesting fdr \
---thresholdComparisons 0.1 \
+--thresholdComparisons 0.05 \
 --delta 0.05 \
 --step $res \
 --minDepth $min_depth \
@@ -134,11 +134,12 @@ hicFindTADs \
 -m $control_corrected_matrix \
 --outPrefix $out_dir/control \
 --correctForMultipleTesting fdr \
---thresholdComparisons 0.003 \
+--thresholdComparisons 0.05 \
 --delta 0.05 \
 --step $res \
 --minDepth $min_depth \
 --maxDepth $max_depth
+
 
 
 # Computes differential TADs by comparing the precomputed TAD regions of the target matrix with the same regions of the control matrix.
