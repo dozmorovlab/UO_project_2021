@@ -41,9 +41,12 @@ For finding A/B compartments, followed a more detailed outline: http://homer.ucs
 
 ## Usage Example (Command Line)
 Running annotatePeaks.pl results in PC1 bedGraph (can be found in output directory: UO_project_2021/ab_compartments/diff_analysis_compartmental_switches/output).
+
 Running getHiCcorrDiff.pl results in correlation difference values (bedGraph) (can be found in output directory: UO_project_2021/ab_compartments/diff_analysis_compartmental_switches/output).
+
 Use UCSC Genome Browser to load the bedGraphs and visualize the bedGraph. (website:https://genome.ucsc.edu/goldenPath/help/customTrack.html)
 
 ## Issues
 The script is currently hardcoded. getHiCcorrDiff.pl is resulting a .bedGraph with correlation difference, however, it is not finding any correlation difference between PR and LM. Need to update.
+
 Possible solution: re-subsample PR.bam and LM.bam files to be equal in size.
