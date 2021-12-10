@@ -43,7 +43,7 @@ For finding A/B compartments, followed a more detailed outline: http://homer.ucs
       - _fwd_sorted.bam
     - WANT TO USE _fwd_sorted.bam and _fwd_sorted.bam
 
-## Usage Example (Command Line)
+## Usage
 01_homer.sh
 - Running annotatePeaks.pl results in PC1 bedGraph (can be found in output directory: UO_project_2021/ab_compartments/diff_analysis_compartmental_switches/output).
 - Running getHiCcorrDiff.pl results in correlation difference values (bedGraph) (can be found in output directory: UO_project_2021/ab_compartments/diff_analysis_compartmental_switches/output).
