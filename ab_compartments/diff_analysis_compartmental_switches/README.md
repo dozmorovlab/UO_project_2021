@@ -50,6 +50,7 @@ For finding A/B compartments, followed a more detailed outline: http://homer.ucs
 - Use UCSC Genome Browser to load the bedGraphs and visualize the bedGraph. (website:https://genome.ucsc.edu/goldenPath/help/customTrack.html)
 
 02_bam_split_paired_end.sh
+
 ```02_bam_split_paired_end.sh /path/to/bamfile.bam /path/to/output/dir/```
 
 ## Issues
