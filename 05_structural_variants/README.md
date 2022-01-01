@@ -123,9 +123,7 @@ Start by removing interfering modules (this mostly applies from loading bamtools
 module purge 
 ```
 
-You will quickly find that there is too much output. I ended up removing some of the `std::cerr` statements, such as below:
-
-It is recommended to go comment out the following line in ```src/hic_breakfinder.cpp```.
+You will quickly find that there is too much output. I ended up removing some of the `std::cerr` statements, such as below in ```src/hic_breakfinder.cpp```:
 ```c++
   91       if (refs.at(bam.RefID).RefName != last_chr) { 
   92         // cerr << "Going through " << refs.at(bam.RefID).RefName << now\n";
@@ -175,12 +173,22 @@ The jobs were submitted as slurm scripts. The original runs resulted in `oom-kil
 
 The SV breakpoints are reformatted with `prepare-SV-breakpoints.py`:
 ```bash
-./prepare-SV-breakpoints.py livermet.breaks.txt livermet.breaks.mod.txt
+./prepare-SV-breakpoints.py ~/projects/hic_breakfinder/src/livermet.breaks.txt livermet.breaks.mod.txt
 ```
 
 ```bash
-./prepare-SV-breakpoints.py primary.breaks.txt primary.breaks.mod.txt
+./prepare-SV-breakpoints.py ~/projects/hic_breakfinder/src/primary.breaks.txt primary.breaks.mod.txt
 ```
+
+```bash
+head livermet.breaks.mod.txt
+```
+
+```bash
+head primary.breaks.mod.txt
+```
+
+Note: The script needed `#!/usr/bin/env python` to be added at the top.
 
 
 Assemble complex structural variants for livermet tumor:
@@ -188,11 +196,24 @@ Assemble complex structural variants for livermet tumor:
 ./assemble-complexSVs \
 	--output livermet \
 	--hic ~/projects/vcu/05_structural_variants/cool_files/all_reps.hic_50000.cool \
-	--break-points ~/projects/hic_breakfinder/src/livermet.breaks.mod.txt \
+	--break-points ~/projects/NeoLoopFinder/scripts/livermet.breaks.mod.txt \
+	--balance-type ICE \
 	--nproc 8
 ```
 
+and for the primary tumor:
+```bash
+./assemble-complexSVs \
+	--output primary \
+	--hic ~/projects/vcu/05_structural_variants/cool_files/3rep.hic_50000.cool \
+	--break-points ~/projects/NeoLoopFinder/scripts/primary.breaks.mod.txt \
+	--nproc 8
+```
 
+```bash
+head livermet.assemblies.txt
+head primary.assemblies.txt
+```
 
 
 ##### 6.1.3 Previous Issue
@@ -248,4 +269,32 @@ This unfortunately is causing the same errors that were seen previously. We are 
 
 
 
+## 7. Neo Loop Caller
 
+Questions: Insitu or dilution protocol? ![link](https://github.com/XiaoTaoWang/NeoLoopFinder/blob/master/scripts/neoloop-caller)
+
+```bash
+python neoloop-caller \
+--output livermet.neoloopcaller.txt \
+--hic ~/projects/vcu/05_structural_variants/cool_files/all_reps.hic_50000.cool \
+--assembly livermet.assemblies.txt \
+--region-size 50000 \
+--nproc 8
+```
+
+```bash
+python neoloop-caller \
+--output primary.neoloopcaller.txt \
+--hic ~/projects/vcu/05_structural_variants/cool_files/3rep.hic_50000.cool \
+--assembly primary.assemblies.txt \
+--region-size 50000 \
+--prob 0.5 \
+--nproc 8
+```
+
+```bash
+head livermet.neoloopcaller.txt
+head primary.neoloopcaller.txt
+```
+
+## 8. 
