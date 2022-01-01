@@ -8,7 +8,7 @@ Structural variants can be detected in contact maps using [NeoLoopFinder](https:
 
 Wang, X., Xu, J., Zhang, B., Hou, Y., Song, F., Lyu, H., Yue, F. Genome-wide detection of enhancer-hijacking events from chromatin interaction data in re-arranged genomes. Nat Methods. 2021.
 
-## Create Cool Files
+## 1. Create Cool Files
 
 The first step is to create cooler files. This is done using `HiCExplorer` version 3.7.2.
 
@@ -52,7 +52,7 @@ cooler balance --force ~/projects/vcu/05_structural_variants/cool_files/3rep.hic
 ```
 
 
-## Calculate Copy Number Variation
+## 2. Calculate Copy Number Variation
 
 The documentation in Neo-loop finder suggests that tumor cells should use the `calculate-cnv` script in order to determine the copy number variation. In other words, this will determine how many DNA sequences that differ from the reference genome (in our case, Hg38). 
 
@@ -71,7 +71,7 @@ A similar command was used for the primary tumor:
 ```
 
 
-## Hidden Markov Model (HMM) Segmentation
+## 3. Hidden Markov Model (HMM) Segmentation
 
 This script makes use of the Circular Binary Segmentation (CBS) algorithm to identify genomic regions and identify the variant copy number in that region. The segment mean values are also calculated using $\log_2(\frac{copy number}{2})$, which gives information about the amplification of copy numbers in the region (positive = overamplification, negative = under amplification, zero = diploid regions). More information about this pipeline can be found [here](
 https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/CNV_Pipeline/#copy-number-variation-analysis-pipeline).
@@ -86,7 +86,7 @@ Primary:
 ./segment-cnv --output ~/vcu_data/week2/neoloopfinder/cnv/primary/segment_cnv --cnv-file ~/vcu_data/week2/neoloopfinder/cnv/primary/cnv_bedgraph --nproc 8 --binsize 50000
 ```
 
-## Remove Number Variation effects 
+## 4. Remove Number Variation effects 
 
 Finally, we remove the copy variation effect in-place.
 
@@ -100,21 +100,21 @@ Primary:
 ./correct-cnv --cnv-file ~/vcu_data/week2/neoloopfinder/cnv/primary/segment_cnv --hic ~/projects/vcu/05_structural_variants/cool_files/3rep.hic_50000.cool --nproc 8 
 ```
 
-## Simulate CNV Effects on a Normal Cell for Comparison
+## 5. Simulate CNV Effects on a Normal Cell for Comparison
 
 This portion cannot be completed at this time because we do not have data of normal cells. The purpose of this section seems to be finding the impacts of the found CNVs on contacts maps from a healthy cell. 
 
-## Assemble Complex Structural Varinants
+## 6. Assemble Complex Structural Variants
 
 As mentioned before, stuctural variants could be deletions, inversions or translocations. In this section, we assemble a text file with possible SVs given breakpoints along the chromosmome arms. To find these breaks and create the requisite breakpoint text file, we used [hic_breakfinder](https://github.com/dixonlab/hic_breakfinder). 
 
-### Breakfinder
+### 6.1. Breakfinder
 
-#### Setup
+#### 6.1.1. Setup
 
 IMPORTANT: Follow the update header for the complete working setup.
 
-##### Update
+##### 6.1.2. Update
 
 The issue is resolved thanks to a post [here](https://github.com/dixonlab/hic_breakfinder/issues/10) by our instructor Jason Sydes. 
 
@@ -195,7 +195,7 @@ Assemble complex structural variants for livermet tumor:
 
 
 
-##### Previous Issue
+##### 6.1.3 Previous Issue
 
 Dependencies for hic_breakfinder include Eigen and bamtools. The following were loaded using lmod:
 ```bash
