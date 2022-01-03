@@ -3,7 +3,7 @@
 source "../../Utilities/Logging/logging.sh"
 
 function usage {
-	echo "usage: pca.sh [-m, --metafile] [-i, --input-directory] [-o, --output-directory] [-s, --sample-size] [-f, --force]";
+	echo "usage: pca.sh [-m, --metafile] [-i, --input-directory] [-o, --output-directory] [-s, --sample-size]";
 }
 
 FORCE=false
@@ -31,11 +31,6 @@ while [ "" != "$1" ]; do
 			shift
 			declare -r SAMPLE_SIZE=$1
 			log "DEBUG" "Sample Size: $SAMPLE_SIZE"
-			;;
-
-		-f | --force)
-			FORCE=true
-			log "DEBUG" "Force parameter turned on."
 			;;
 
 		-h | --help)
