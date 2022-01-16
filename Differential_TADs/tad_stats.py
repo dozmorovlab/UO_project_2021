@@ -228,7 +228,7 @@ plt.xticks([r + barWidth for r in range(len(chromosomes))],
         chromosomes)
  
 plt.legend()
-plt.savefig('tad_sizes.png')
+plt.savefig(f'{args.outdir}/tad_sizes.png')
 
 #################### plotting tad numbers #####################
 
@@ -253,7 +253,7 @@ plt.xticks([r + barWidth for r in range(len(chromosomes))],
         chromosomes)
  
 plt.legend()
-plt.savefig('tad_numbers.png')
+plt.savefig(f'{args.outdir}tad_numbers.png')
 
 
 #################### plotting ratio rejected/accepted numbers #####################
@@ -276,7 +276,7 @@ plt.ylabel('Ratio Different/Same TADs', fontweight ='bold', fontsize = 15)
 plt.xticks([r for r in range(len(chromosomes))],
         chromosomes)
 
-plt.savefig('differential_numbers.png')
+plt.savefig(f'{args.outdir}differential_numbers.png')
 
 
 #################### plotting boundary differences #####################
@@ -299,4 +299,4 @@ plt.ylabel('Ratio different/same boundaries', fontweight ='bold', fontsize = 15)
 plt.xticks([r for r in range(len(chromosomes))],
         chromosomes)
 
-plt.savefig('differential_boundaries.png')
+plt.savefig(f'{args.outdir}differential_boundaries.png')
