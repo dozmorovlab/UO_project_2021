@@ -22,11 +22,15 @@ R CMD INSTALL functionsdchic_1.0.tar.gz
   - **Input**
     dcHic requires an input file (input.txt) that contains .matrix and .bed files (as described in their GitHub). To create .matrix and .bed files, we used .cool file and converted using their provided script: preprocessing.py 
   - **Output**
-    This creates many directories (as described in their GitHub). The output we're interested in is in the following directory:
+    This creates many directories (as described in their GitHub). The following directory contains the files we're interested (output of *analyze*):
     ```
     ./DifferentialResult/PR_vs_LM_50kb/fdr_result/
     ```
     This directory contains differential.intra_sample_combined.Filtered.pcQnm.bedGraph which contains statistically significantly switched compartments (p<0.05) and differential.intra_sample_combined.pcQnm.bedGraph contains all the regions with the corresponding PC values.
+    \n
+    \n
+    The option *viz* creates an IGV HTML file to visualize PC values and the significant regions.
+    - intra_igv.html
 
 - 02_abswitch.sh
   - Description: This file takes in the analysis result from dcHic and outputs a pie chart and bar graph of compartmental switches.
