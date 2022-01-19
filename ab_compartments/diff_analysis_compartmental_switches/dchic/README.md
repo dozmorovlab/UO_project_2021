@@ -27,8 +27,8 @@ R CMD INSTALL functionsdchic_1.0.tar.gz
     ./DifferentialResult/PR_vs_LM_50kb/fdr_result/
     ```
     This directory contains differential.intra_sample_combined.Filtered.pcQnm.bedGraph which contains statistically significantly switched compartments (p<0.05) and differential.intra_sample_combined.pcQnm.bedGraph contains all the regions with the corresponding PC values.
-    \n
-    \n
+    <br />
+    <br />
     The option *viz* creates an IGV HTML file to visualize PC values and the significant regions.
     - intra_igv.html
 
