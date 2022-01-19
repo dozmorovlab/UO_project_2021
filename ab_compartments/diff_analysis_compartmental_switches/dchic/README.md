@@ -17,7 +17,7 @@ R CMD INSTALL functionsdchic_1.0.tar.gz
 ## Scripts
 
 - 01_dchic.sh
-  Description: There are different types of options to use to run dcHic. This script contains different options, however, the option *analyze* is the analysis of compartmental switches. The option *viz* creates an interactive IGV.html.
+  - Description: There are different types of options to use to run dcHic. This script contains different options, however, the option *analyze* is the analysis of compartmental switches. The option *viz* creates an interactive IGV.html.
   Although the *analyze* ran without errors, the option *subcomp* returned an error.
   - **Input**
     dcHic requires an input file (input.txt) that contains .matrix and .bed files (as described in their GitHub). To create .matrix and .bed files, we used .cool file and converted using their provided script: preprocessing.py 
@@ -29,7 +29,7 @@ R CMD INSTALL functionsdchic_1.0.tar.gz
     This directory contains differential.intra_sample_combined.Filtered.pcQnm.bedGraph which contains statistically significantly switched compartments (p<0.05) and differential.intra_sample_combined.pcQnm.bedGraph contains all the regions with the corresponding PC values.
 
 - 02_abswitch.sh
-  Description: This file takes in the analysis result from dcHic and outputs a pie chart and bar graph of compartmental switches.
+  - Description: This file takes in the analysis result from dcHic and outputs a pie chart and bar graph of compartmental switches.
   - **Input**
     - The input of this script are the following:
       - differential.intra_sample_combined.Filtered.pcQnm.bedGraph
