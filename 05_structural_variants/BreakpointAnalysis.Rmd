@@ -1,0 +1,237 @@
+---
+title: "Breakpoint Analysis"
+author: "Brian Palmer"
+date: "1/13/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE, results='hide', fig.keep='last', include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+
+my_read <- function(input_file) {
+  ret <- read_tsv(
+    input_file,
+    col_names = c(
+    'chrA', 'chrB', 'orientation', 'b1', 'b2', 'type'
+    )
+  )
+  return(ret)
+}
+
+plot_breakpoints <- function(dat) {
+  p <- ggplot(dat, aes(b1, b2)) +
+  ggplot2::geom_point(aes(colour = factor(type))) +
+  # labs(x = 'The position of the 1st breakpoint on chrA', y = 'The position of the 2nd breakpoint on chrB') +
+  theme(legend.title = element_blank())
+  
+  return(p)
+}
+
+lm <- my_read('livermet.breaks.mod.txt')
+pr <- my_read('primary.breaks.mod.txt')
+
+lm_plot_breaks <- ggplot(lm, aes(b1, b2)) +
+  ggplot2::geom_point(aes(colour = factor(type))) +
+  # labs(x = 'The position of the 1st breakpoint on chrA', y = 'The position of the 2nd breakpoint on chrB') +
+  theme(legend.title = element_blank(), legend.direction = 'horizontal', legend.position = 'bottom', axis.title.y = element_blank(), axis.title.x = element_blank())
+
+pr_plot_breaks <- ggplot(pr, aes(b1, b2)) +
+  ggplot2::geom_point(aes(colour = factor(type))) +
+  # labs(x = 'The position of the 1st breakpoint on chrA', y = 'The position of the 2nd breakpoint on chrB') +
+  theme(legend.title = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = 'none')
+
+lm_plot <- lm_plot_breaks
+#   plot_annotation(
+#   title = 'Beginning and End Breakpoints for Livermet Tumor by Structural Variant Type',
+# )
+
+pr_plot <- pr_plot_breaks
+#   plot_annotation(
+#   title = 'Beginning and End Breakpoints for Primary Tumor by Structural Variant Type',
+# )
+
+together <- pr_plot / lm_plot 
+  plot_annotation(
+  # title = 'Beginning and End Breakpoints for Primary Tumor by Structural Variant Type',
+)
+
+
+# ggplot2::ggsave(filename = 'lm_bp_sv_points.png', plot = lm_plot)
+# ggplot2::ggsave(filename = 'pr_bp_sv_points.png', plot = pr_plot)
+ggplot2::ggsave(filename = 'C:\\Users\\14436\\projects\\VCU\\UO_project_2021\\05_structural_variants\\together.png', plot = together, width = 8.5, height = 8.5)
+plot(together)
+
+
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE, results='show', fig.keep='last', include=FALSE}
+
+lm_hist_b1 <- ggplot(lm, aes(abs(b1 - b2), fill = factor(type))) +
+  geom_histogram(bins = 50) +
+  theme(legend.title = element_blank())
+
+plot(lm_hist_b1)
+
+pr_hist_b1 <- ggplot(pr, aes(abs(b1 - b2), fill = factor(type))) +
+  geom_histogram(bins = 50) +
+  theme(legend.title = element_blank())
+
+plot(pr_hist_b1)
+
+
+
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE, results='show', fig.keep='last', include=FALSE}
+
+type_count <- function(dat) {
+  ret <- dat %>%
+    group_by(type) %>%
+    summarise(
+      count = n(),
+      percentage = n() / nrow(dat) * 100
+    )
+  return(ret)
+}
+
+library(kableExtra)
+type_count(lm) %>% 
+  kable(format = 'html') %>%
+  kable_styling(bootstrap_options = 'striped', full_width = F)
+
+type_count(pr) %>% 
+  kable(format = 'html') %>%
+  kable_styling(bootstrap_options = 'striped', full_width = F)
+
+```
+
+
+## Chromo map
+
+Creating the input files per the [instructions](https://cran.r-project.org/web/packages/chromoMap/vignettes/chromoMap.html#Prepare_Input_Data_Files).
+
+```bash
+wget 'http://ftp.ensembl.org/pub/release-105/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz'
+gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+cat Homo_sapiens.GRCh38.dna.primary_assembly.fa | grep -e 'chromosome' > 'chromoMap_chr.txt'
+
+cat primary.breaks.mod.txt | cut -f 2,4,5,6 | sed -E "s/^(.*)\t(.*)\t(.*)\t(.*)$/\4\t\1\t\2\t\3/" > primary.chromomap.txt
+cat livermet.breaks.mod.txt | cut -f 2,4,5,6 | sed -E "s/^(.*)\t(.*)\t(.*)\t(.*)$/\4\t\1\t\2\t\3/" > livermet.chromomap.txt
+```
+
+Sorting the chromosome file and other setup:
+```bash
+cat livermet.breaks.mod.txt | sed -nE 's/^chr([0-9]+|MT|X|Y)\tchr([0-9]+|MT|X|Y)\t(.*)/\1\t\2\t\3/p' | sort -nk 1 -nk 2 > lm_input.txt
+
+cat lm_input.txt
+
+cat primary.breaks.mod.txt | sed -nE 's/^chr([0-9]+|MT|X|Y)\tchr([0-9]+|MT|X|Y)\t(.*)/\1\t\2\t\3/p' | sort -nk 1 -nk 2 > pr_input.txt
+
+cat gene_file.txt | sed -nE 's/^(.*)\tchr([0-9]+|X|Y|MT)\t(.*)$/\1\t\2\t\3/p' | sort -nk 2 > gene_input.txt
+
+python3 breaks_within_genes.py gene_input.txt lm_input.txt livermet.output.txt
+```
+
+```python
+#!/usr/bin/env python
+
+# gtf.py
+
+last_chrom = 1
+seen = set()
+
+with open('gene_file.txt', 'w') as o:
+	# with open('Homo_sapiens.GRCh38.105.gtf') as f:
+	with open('Homo_sapiens.GRCh38.105.gtf') as f:
+		for line in f:
+			if not line.startswith('#'):
+				lines = line.rstrip('\n').split('\t')
+				col_9_ns = lines[-1].translate({ord(i): None for i in ' '}).split(';')
+
+				if len(lines[0]) <= 2: # ignore scaffolds
+					for e in col_9_ns:
+						if 'gene_name' in e:
+							start = e.find('\"') + 1
+							end = e.find('\"', start) - 1
+							gene_name = e[start:end]
+
+							if (lines[0] in ('X','Y','MT') and last_chrom != lines[0]):
+								last_chrom = lines[0]
+								seen.clear()
+
+							elif (lines[0] not in ('X','Y','MT')) and int(lines[0]) != last_chrom:
+								last_chrom = int(lines[0])
+								seen.clear()
+
+							# t = (lines[0], lines[3], lines[4], gene_name)
+							t = (lines[0], gene_name)
+
+							if t not in seen:
+								seen.add(t)
+								o.write(f"{gene_name}\tchr{lines[0]}\t{lines[3]}\t{lines[4]}\n")
+```
+
+```python
+#!/usr/bin/env python
+
+# breaks_with_genes.py
+
+import sys
+
+gene_file = sys.argv[1]		# 3, 4
+breaks_file = sys.argv[2] 	# 3, 4
+outfile = sys.argv[3]
+
+last_chrom = 'MT'
+seen = set()
+breaks = dict()
+
+def add_to_dict(mapping, key, value):
+	if key not in mapping:
+		mapping[key] = set()
+	mapping[key].add(value)
+
+
+with open(breaks_file, 'r') as bf:
+	for line in bf:
+		line = line.rstrip().split('\t')
+		add_to_dict(breaks, line[0], (int(line[3]), line[5]))
+		add_to_dict(breaks, line[1], (int(line[4]), line[5]))
+
+with open(gene_file, 'r') as gf, open(outfile, 'w') as of:
+	for gene in gf:
+		gene = gene.rstrip().split('\t')
+		if gene[1] in breaks:
+			for b in breaks[gene[1]]:
+				if int(b[0]) >= int(gene[2]) and int(b[0]) <= int(gene[3]):
+					gene[1] = 'chr' + str(gene[1])
+					of.write('\t'.join(e for e in gene) + '\n')
+
+
+```
+
+
+Below is a plot of the livermet breaks using the chromosome coordinates from `Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz`. 
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE, results='show', fig.keep='all', include=TRUE}
+library(chromoMap)
+library(tidyverse)
+
+t<-read.table('livermet.output.txt')
+
+sum(grepl(t$V2,pattern = '^chrchr'))
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE, results='show', fig.keep='all', include=TRUE}
+# chromoMap('chromoMap_chr.txt','primary.chromomap.txt')
+chromoMap('chromoMap_chr.txt','livermet.output.txt',canvas_height = 750)
+
+```
+
+

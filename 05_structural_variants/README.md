@@ -114,7 +114,7 @@ As mentioned before, stuctural variants could be deletions, inversions or transl
 
 IMPORTANT: Follow the update header for the complete working setup.
 
-##### 6.1.2. Update
+#### 6.1.2. HiC Break Finder (working solution)
 
 The issue is resolved thanks to a post [here](https://github.com/dixonlab/hic_breakfinder/issues/10) by our instructor Jason Sydes. 
 
@@ -159,6 +159,14 @@ The expectation files are described in this [issue](https://github.com/dixonlab/
 
 The files are accessible online [here](https://salkinstitute.app.box.com/s/m8oyv2ypf8o3kcdsybzcmrpg032xnrgx). Note that we only need Hg38 so it may save you time to just download those files.
 
+The readme recommends removing low quality alignments. This can be done with `hic_align_pipeline.sh` in the dixon lab's repo `https://github.com/dixonlab/HiC_alignment_basic_scripts.git`.
+
+Command to align (note: this was done with the test file first):
+```bash
+./hic_align_pipeline.sh ~/vcu_data/data/bam_files/test_sample.bam
+```
+
+
 Command for livermet:
 ```bash
 ./hic_breakfinder --bam-file ~/vcu_data/week2/downloads/W30_LiverMet.fastq.gz.bam --exp-file-inter ../expect/inter_expect_1Mb.hg38.txt --exp-file-intra ../expect/intra_expect_100kb.hg38.txt --name livermet
@@ -190,14 +198,14 @@ head primary.breaks.mod.txt
 
 Note: The script needed `#!/usr/bin/env python` to be added at the top.
 
+#### 6.1.3. Assemble complex structural variants
 
 Assemble complex structural variants for livermet tumor:
 ```bash
 ./assemble-complexSVs \
-	--output livermet \
-	--hic ~/projects/vcu/05_structural_variants/cool_files/all_reps.hic_50000.cool \
-	--break-points ~/projects/NeoLoopFinder/scripts/livermet.breaks.mod.txt \
-	--balance-type ICE \
+	-O livermet \
+	-H ~/projects/vcu/05_structural_variants/cool_files/all_reps.hic_50000.cool \
+	-B ~/projects/NeoLoopFinder/scripts/livermet.breaks.mod.txt \
 	--nproc 8
 ```
 
@@ -215,8 +223,7 @@ head livermet.assemblies.txt
 head primary.assemblies.txt
 ```
 
-
-##### 6.1.3 Previous Issue
+#### 6.1.4 HiC Break Finder (Previous Issue - resolved in 6.1.2)
 
 Dependencies for hic_breakfinder include Eigen and bamtools. The following were loaded using lmod:
 ```bash
@@ -288,7 +295,6 @@ python neoloop-caller \
 --hic ~/projects/vcu/05_structural_variants/cool_files/3rep.hic_50000.cool \
 --assembly primary.assemblies.txt \
 --region-size 50000 \
---prob 0.5 \
 --nproc 8
 ```
 
