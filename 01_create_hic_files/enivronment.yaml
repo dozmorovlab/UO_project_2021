@@ -1,0 +1,8 @@
+name: hic
+channels:
+  - cyclus
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - java-jdk=8.45.14=0
