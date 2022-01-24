@@ -278,7 +278,7 @@ This unfortunately is causing the same errors that were seen previously. We are 
 
 ## 7. Neo Loop Caller
 
-Questions: Insitu or dilution protocol? ![link](https://github.com/XiaoTaoWang/NeoLoopFinder/blob/master/scripts/neoloop-caller)
+Questions: Insitu or dilution protocol? [link](https://github.com/XiaoTaoWang/NeoLoopFinder/blob/master/scripts/neoloop-caller)
 
 ```bash
 python neoloop-caller \
@@ -303,4 +303,6 @@ head livermet.neoloopcaller.txt
 head primary.neoloopcaller.txt
 ```
 
-## 8. 
+Running this code did not produce any output in `livermet.neoloopcaller.txt` or `primary.neoloopcaller.txt`. After further inspecting the inputs, there was nothing written to the `*.assemblies.txt` files. The break file was converted as was instructed and there was output (see bottom of 6.1.2), so it is strange that the assemblies file was empty and there was no error.
+
+It is hard to say why no assembly file was produced at this time. 
