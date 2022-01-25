@@ -12,4 +12,4 @@ This script uses the Juicer `calculate_map_resolution.sh` script referenced in `
 
 ## Randomizer.sh
 
-The merged primary file was around 500 GB, nearly twice the size of the liver metastasis sample with all merged replicates (~ 250 GB).  
+The merged primary file was around 500 GB, nearly twice the size of the liver metastasis sample with all merged replicates (~ 250 GB). We split the primary file into two halves, shuffled the contents randomly, then merged one half of each together to create two equally sized primary files (~250 GB).
