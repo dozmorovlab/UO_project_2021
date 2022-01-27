@@ -14,11 +14,11 @@ Ideally, replicates in each group will be similar to each other. Previous resear
 
 ## Directory Structure
 
-├── StratumAdjustedCorrelationCoefficients 	# Script to create SCC heatmap
-├── PCA                     				# Scripts for PCA plotting
-├── MDS                     				# Scripts for MDS plotting
-├── Distance Decay          				# Distance decay scripts
-└── README.md
+├── StratumAdjustedCorrelationCoefficients 	# Script to create SCC heatmap</br>
+├── PCA                     				# Scripts for PCA plotting</br>
+├── MDS                     				# Scripts for MDS plotting></br>
+├── Distance Decay          				# Distance decay scripts</br>
+└── README.md</br>
 
 ## PCA
 
