@@ -1,1 +1,0 @@
-- `AB_eigenvector_sign.Rmd` - Demo code for checking eigenvector sign. A/B compartments should have higher/lower gene density. 
