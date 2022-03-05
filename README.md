@@ -12,3 +12,6 @@ Main goal is to identify changes in the 3D genome organization between drug-resi
 
 Supplementary data include differential gene expression, CNVs, SNPs, InDels, SVs.
 
+
+### Work flow
+1. Create HiC files using Juicer, see [01_create_hic_files](https://github.com/dozmorovlab/UO_project_2021/tree/main/01_create_hic_files) for more details.
