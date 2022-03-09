@@ -1,4 +1,5 @@
 import statistics as st
+import math
 def get_args(): #defines all the independent variables
 	import argparse
 	parser = argparse.ArgumentParser(description = "still need description")
@@ -52,6 +53,8 @@ with open(args.outdir+'/control_domains.bed') as control:
 			tad_sizes.clear()
 
 		prev_chrom=chromosome
+
+
 
 
 ############ Getting stuff from treatment TADs ############
@@ -193,11 +196,13 @@ with open(args.outdir+'/differential_TAD_rejected.bed') as rejected:
 		prev_chrom=chromosome
 
 
-diff_ratios=[]
-for i in range(0,len(chromosomes)):
-	diff_ratios.append(rejected_numbers[i]/accepted_numbers[i])
+# diff_ratios=[]
+# for i in range(0,len(chromosomes)):
+# 	diff_ratios.append(math.log2(rejected_numbers[i]/accepted_numbers[i]))
 
+diff_ratios=[ (rejected_numbers[i] / accepted_numbers[i] ) for i in range(0,len(accepted_numbers)) ]
 
+# diff_ratios=[math.log2( (rejected_numbers[i]+0.01) / accepted_numbers[i] ) for i in range(0,len(accepted_numbers)) ]
 
 ################# finding tad boundaries ###################
 
@@ -208,95 +213,82 @@ import numpy as np
 import matplotlib.pyplot as plt
  
 # set width of bar
-barWidth = 0.35
+# barWidth = 0.35
 fig = plt.subplots(figsize =(12, 8))
  
 # Set position of bar on X axis
 br1 = np.arange(len(chromosomes))
-br2 = [x + barWidth for x in br1]
- 
+
+lfc=[math.log2( (treatment_sizes[i]+0.01) / control_sizes[i] ) for i in range(0,len(control_sizes)) ]
+
 # Make the plot
-plt.bar(br1, control_sizes, color ='gold', width = barWidth,
-        edgecolor ='black', label ='Primary')
-plt.bar(br2, treatment_sizes, color ='darkorchid', width = barWidth,
-        edgecolor ='black', label ='Metastasis')
+
+plt.bar(br1, lfc, color ='blue', edgecolor ='black')
  
 # Adding Xticks
 plt.xlabel('Chromosome', fontweight ='bold', fontsize = 15)
-plt.ylabel('Average Size of TAD', fontweight ='bold', fontsize = 15)
-plt.xticks([r + barWidth for r in range(len(chromosomes))],
+plt.ylabel('LFC(2) TAD Size, Metastatic:Primary', fontweight ='bold', fontsize = 15)
+plt.xticks([r for r in range(len(chromosomes))],
         chromosomes)
- 
-plt.legend()
-plt.savefig(f'{args.outdir}/tad_sizes.png')
+
+plt.savefig(args.outdir+'/plots/tad_sizes.png')
 
 #################### plotting tad numbers #####################
 
 # set width of bar
-barWidth = 0.35
 fig = plt.subplots(figsize =(12, 8))
  
 # Set position of bar on X axis
 br1 = np.arange(len(chromosomes))
-br2 = [x + barWidth for x in br1]
- 
+
+lfc=[math.log2( (treatment_numbers[i]+0.01) / control_numbers[i] ) for i in range(0,len(control_numbers)) ]
+
 # Make the plot
-plt.bar(br1, control_numbers, color ='gold', width = barWidth,
-        edgecolor ='black', label ='Primary')
-plt.bar(br2, treatment_numbers, color ='darkorchid', width = barWidth,
-        edgecolor ='black', label ='Metastasis')
+plt.bar(br1, lfc, color ='gold', edgecolor ='black')
  
 # Adding Xticks
 plt.xlabel('Chromosome', fontweight ='bold', fontsize = 15)
-plt.ylabel('Number of TADs', fontweight ='bold', fontsize = 15)
-plt.xticks([r + barWidth for r in range(len(chromosomes))],
-        chromosomes)
+plt.ylabel('LFC Number of TADs, Metastatic:Primary', fontweight ='bold', fontsize = 15)
+plt.xticks([r for r in range(len(chromosomes))], chromosomes)
  
-plt.legend()
-plt.savefig(f'{args.outdir}tad_numbers.png')
+plt.savefig(args.outdir+'/plots/tad_numbers.png')
 
 
 #################### plotting ratio rejected/accepted numbers #####################
 
 # set width of bar
-barWidth = 0.35
 fig = plt.subplots(figsize =(12, 8))
- 
+
 # Set position of bar on X axis
 br1 = np.arange(len(chromosomes))
  
 # Make the plot
-plt.bar(br1, diff_ratios, color ='b', width = barWidth,
-        edgecolor ='black')
+plt.bar(br1, diff_ratios, color ='b', edgecolor ='black')
 
  
 # Adding Xticks
 plt.xlabel('Chromosome', fontweight ='bold', fontsize = 15)
-plt.ylabel('Ratio Different/Same TADs', fontweight ='bold', fontsize = 15)
-plt.xticks([r for r in range(len(chromosomes))],
-        chromosomes)
+plt.ylabel('Ratio Different:Same TADs', fontweight ='bold', fontsize = 15)
+plt.xticks([r for r in range(len(chromosomes))], chromosomes)
 
-plt.savefig(f'{args.outdir}differential_numbers.png')
+plt.savefig(args.outdir+'/plots/differential_numbers.png')
 
 
 #################### plotting boundary differences #####################
 
 # set width of bar
-barWidth = 0.35
 fig = plt.subplots(figsize =(12, 8))
  
 # Set position of bar on X axis
 br1 = np.arange(len(chromosomes))
  
 # Make the plot
-plt.bar(br1, boundary_ratio, color ='orange', width = barWidth,
-        edgecolor ='black')
+plt.bar(br1, boundary_ratio, color ='orange', edgecolor ='black')
 
  
 # Adding Xticks
 plt.xlabel('Chromosome', fontweight ='bold', fontsize = 15)
 plt.ylabel('Ratio different/same boundaries', fontweight ='bold', fontsize = 15)
-plt.xticks([r for r in range(len(chromosomes))],
-        chromosomes)
+plt.xticks([r for r in range(len(chromosomes))], chromosomes)
 
-plt.savefig(f'{args.outdir}differential_boundaries.png')
+plt.savefig(args.outdir+'/plots/differential_boundaries.png')
