@@ -30,6 +30,7 @@ help()
     echo "     --boundary_distance : min distance between boundaries in UNITS OF RESOLUTION."
     echo "     --threshold : q-value cutoff for FDR correction"
     echo "     --delta : amount below avg a local minimum TAD score needs to be for consideration of TAD boundary"
+    echo "     --chromosome : which chromosome to display heatmap of"
     echo "     --control_name : enter name for control sample, e.g. primary."
     echo "     --treatment_name : enter name for treament sample, e.g. metastatic."
     echo "     --control_hic : path to control hic file."
@@ -74,6 +75,10 @@ while [ "$1" != "" ]; do
     -d | --delta) # amount below avg a local minimum TAD score needs to be for consideration of TAD boundary
         shift
         delta=$1
+        ;;
+    -R | --chromosome) # which chromosome to plot
+        shift
+        chrom=$1
         ;;
     -c | --control_name)
         shift
@@ -149,6 +154,7 @@ echo 'done with converting'
 #####################################################################
 #####################################################################
 
+
 treatment_cool_matrix=$out_dir/$treatment_name$a.cool
 control_cool_matrix=$out_dir/$control_name$a.cool
 
@@ -169,9 +175,10 @@ echo 'done with normalize'
 #####################################################################
 
 
+rm $treatment_cool_matrix && rm $control_cool_matrix
+
 treatment_cool_matrix=$out_dir/norm_$treatment_name.cool
 control_cool_matrix=$out_dir/norm_$control_name.cool
-
 
 
 
@@ -181,11 +188,11 @@ control_cool_matrix=$out_dir/norm_$control_name.cool
 #####################################################################
 hicCorrectMatrix diagnostic_plot \
 --matrix $treatment_cool_matrix \
--o $out_dir/treatment_diagnostic_before
+-o $out_dir/plots/treatment_diagnostic_before
 
 hicCorrectMatrix diagnostic_plot \
 --matrix $control_cool_matrix \
--o $out_dir/control_diagnostic_before
+-o $out_dir/plots/control_diagnostic_before
 
 hicCorrectMatrix correct \
 -m $treatment_cool_matrix \
@@ -201,17 +208,18 @@ hicCorrectMatrix correct \
 
 hicCorrectMatrix diagnostic_plot \
 --matrix $out_dir/corrected_$treatment_name.cool \
--o $out_dir/treatment_diagnostic_after
+-o $out_dir/plots/treatment_diagnostic_after
 
 hicCorrectMatrix diagnostic_plot \
 --matrix $out_dir/corrected_$control_name.cool \
--o $out_dir/control_diagnostic_after
+-o $out_dir/plots/control_diagnostic_after
 
 
 echo 'done with ICE correcting'
 #####################################################################
 #####################################################################
 
+rm $treatment_cool_matrix && rm $control_cool_matrix
 
 treatment_corrected_matrix=$out_dir/corrected_$treatment_name.cool
 control_corrected_matrix=$out_dir/corrected_$control_name.cool
@@ -274,7 +282,7 @@ cp tracks.ini ./$out_dir
 # uses tracks.ini file to plot hic matrices and TADs (tracks.ini file needs to be manually created)
 pyGenomeTracks \
 --tracks $out_dir/tracks.ini \
---out $out_dir/diff_tads_mindepth$min_depth.maxdepth$max_depth.minbound$min_distance.delta$delta.threshold$threshold.png \
+--out $out_dir/plots/diff_tads_mindepth$min_depth.maxdepth$max_depth.minbound$min_distance.delta$delta.threshold$threshold.png \
 --region chr20:35000000-45000000
 
 echo 'done with plotting'
@@ -291,15 +299,15 @@ echo 'done with plotting'
 
 hicPlotMatrix \
 -m $treatment_corrected_matrix \
--o $out_dir/chr20_$treatment_name.png \
+-o $out_dir/plots/chr$chrom.$treatment_name.png \
 --log1p \
---chromosomeOrder 20
+--chromosomeOrder $chrom
 
 hicPlotMatrix \
 -m $control_corrected_matrix \
--o $out_dir/chr20_$control_name.png \
+-o $out_dir/plots/chr$chrom.$control_name.png \
 --log1p \
---chromosomeOrder 20
+--chromosomeOrder $chrom
 
 echo 'done with heatmaps'
 #####################################################################
