@@ -3,6 +3,10 @@
 
 The script `diff_TADs.sh` uses [HiC Explorer](https://hicexplorer.readthedocs.io/en/latest/index.html) functions on hic matrices to find statistically different TADs between two samples.
 
+Download `diff_TADs.sh`, `tad_stats.py`, `tracks.ini`, and `hicexplorer_environment.yml` to your working directory. \
+Then run `conda env create -f hicexplorer_environment.yml && conda activate hicexplorer_environment.yml` to ensure the dependencies are working.
+
+
 ## Script Editing
 
 Some script editing is needed. \
