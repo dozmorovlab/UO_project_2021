@@ -1,13 +1,4 @@
 #!/bin/bash
-#SBATCH --partition=bgmp
-#SBATCH --account=bgmp
-#SBATCH --job-name=TAD
-#SBATCH --output=TAD_%j.out
-#SBATCH --error=TAD_%j.out
-#SBATCH --time=1-00:00:00
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=120G
 
 
 ###### This script will take two hic files, one treatment and one control, 
@@ -19,41 +10,120 @@
 
 conda activate hicexplorer
 
+
+# help functions, displays user options
+help()
+{
+    echo " "
+    echo "This script uses HiCExplorer to convert HiC files into .cool files and"
+    echo "then normalizes matrices and corrects via iterative matrix correction. "
+    echo "Lastly, boundaries are called using the passed parameters. A statistical"
+    echo "analysis of differential boundaries is performed and a custom Python script"
+    echo "uses the output to plot the results (see output_dir/plots)."
+    echo " "
+    echo "The following options are required:"
+    echo "     --resolution : desired resolution of resulting cool files."
+    echo "     --minimum : Minimum window length (in bp) to be considered to the left and to the right of each Hi-C bin."
+    echo "                 This number should be at least 3 times as large as the bin size of the Hi-C matrix."
+    echo "     --maximum : Maximum window length to be considered to the left and to the right of the cut point in bp."
+    echo "                 This number should around 6-10 times as large as the bin size of the Hi-C matrix."
+    echo "     --boundary_distance : min distance between boundaries in UNITS OF RESOLUTION."
+    echo "     --threshold : q-value cutoff for FDR correction"
+    echo "     --delta : amount below avg a local minimum TAD score needs to be for consideration of TAD boundary"
+    echo "     --control_name : enter name for control sample, e.g. primary."
+    echo "     --treatment_name : enter name for treament sample, e.g. metastatic."
+    echo "     --control_hic : path to control hic file."
+    echo "     --treatment_hic : path to treatment hic file."
+    echo " "
+    echo " "
+    echo "For more information regarding parameters please visit https://hicexplorer.readthedocs.io/en/latest/content/list-of-tools.html"
+}
+
+# if no arguments are provided, return usage function
+if [ $# -eq 0 ]; then
+    echo " "
+    echo "Thou shalt pass options to this script. Here is the help menu:"
+    echo " "
+    help
+    exit 1
+fi
+
+
+while [ "$1" != "" ]; do
+    case $1 in
+    -r | --resolution) # desired resolution of resulting cool files
+        shift # remove `-t` or `--tag` from `$1`
+        res=$1
+        ;;
+    -m | --minimum) # Minimum window length (in bp) to be considered to the left and to the right of each Hi-C bin. This number should be at least 3 times as large as the bin size of the Hi-C matrix
+        shift
+        min=$1
+        ;;
+    -M | --maximum) # Maximum window length to be considered to the left and to the right of the cut point in bp. This number should around 6-10 times as large as the bin size of the Hi-C matrix.
+        shift
+        max=$1
+        ;;
+    -b | --boundary_distance) # min distance between boundaries in units of resolution
+        shift
+        minb=$1
+        ;;
+    -T | --threshold) #P-value threshold for the Bonferroni correction / q-value for FDR.
+        shift
+        threshold=$1
+        ;;
+    -d | --delta) # amount below avg a local minimum TAD score needs to be for consideration of TAD boundary
+        shift
+        delta=$1
+        ;;
+    -c | --control_name)
+        shift
+        control_name=$1
+        ;;
+    -t | --treatment_name)
+        shift
+        treatment_name=$1
+        ;;
+    -C | --control_hic)
+        shift
+        control_hic_matrix=$1
+        ;;
+    -Y | --treament_hic)
+        shift
+        treatment_hic_matrix=$1
+        ;;
+    -h | --help)
+        help # run usage function
+        exit 0
+        ;;
+    *)
+        echo " "
+        echo "Wrong. Here is the help menu:"
+        echo " "
+        help
+        exit 1
+        ;;
+    esac
+    shift # remove the current value for `$1` and use the next
+done
+
+
+
+
 #####################################################################
 ##### Options #####
 #####################################################################
-# resolution
-res=50000
 
-# min depth: Minimum window length (in bp) to be considered to the left and to the right of each Hi-C bin. This number should be at least 3 times as large as the bin size of the Hi-C matrix
-# max depth: Maximum window length to be considered to the left and to the right of the cut point in bp. This number should around 6-10 times as large as the bin size of the Hi-C matrix.
-let min_depth=6*$res
-let max_depth=12*$res
-let min_bound=$res
-threshold=0.007
-delta=0.1
+min_depth=$(($res * $min))
+max_depth=$(($res * $max))
+min_bound=$(($minb * $res))
 
 # out directory
 out_dir=./diff_TADs_$res
 mkdir -p $out_dir
-
-# control sample name
-control_name=primary 
-
-# treatment sample name
-treatment_name=livermet 
-
-# path to treatment hic matrix
-treatment_hic_matrix=/projects/bgmp/shared/2021_projects/VCU/data/merged_files/livermet_merged/inter_25_50.hic
-
-# path to control hic matrix
-control_hic_matrix=/projects/bgmp/shared/2021_projects/VCU/data/merged_files/primary_merged/text_files/down_sampled/splitted_shuffled_primary_downsample_1.hic
-
+mkdir -p $out_dir/plots
 a=_$res
 #####################################################################
 #####################################################################
-
-
 
 
 
@@ -94,9 +164,11 @@ hicNormalize \
 -o $out_dir/norm_$treatment_name.cool $out_dir/norm_$control_name.cool
 
 
-echo 'dont with normalize'
+echo 'done with normalize'
 #####################################################################
 #####################################################################
+
+
 treatment_cool_matrix=$out_dir/norm_$treatment_name.cool
 control_cool_matrix=$out_dir/norm_$control_name.cool
 
@@ -128,40 +200,17 @@ hicCorrectMatrix correct \
 --correctionMethod ICE
 
 hicCorrectMatrix diagnostic_plot \
---matrix $out_dir/ICE_corrected_$treatment_name.cool \
+--matrix $out_dir/corrected_$treatment_name.cool \
 -o $out_dir/treatment_diagnostic_after
 
 hicCorrectMatrix diagnostic_plot \
---matrix $out_dir/ICE_corrected_$control_name.cool \
+--matrix $out_dir/corrected_$control_name.cool \
 -o $out_dir/control_diagnostic_after
 
 
 echo 'done with ICE correcting'
 #####################################################################
 #####################################################################
-
-
-
-
-
-# #####################################################################
-# # KR correction for matrices
-# #####################################################################
-# hicCorrectMatrix correct \
-# -m $treatment_cool_matrix \
-# -o $out_dir/corrected_$treatment_name.cool \
-# --correctionMethod KR
-
-# hicCorrectMatrix correct \
-# -m $control_cool_matrix \
-# -o $out_dir/corrected_$control_name.cool \
-# --correctionMethod KR
-
-
-# echo 'done with KR correction'
-# #####################################################################
-# #####################################################################
-
 
 
 treatment_corrected_matrix=$out_dir/corrected_$treatment_name.cool
@@ -172,7 +221,7 @@ control_corrected_matrix=$out_dir/corrected_$control_name.cool
 #####################################################################
 # find TADs on each matrix and compute differential TADs
 #####################################################################
-removes previous tad scores
+## removes previous tad scores
 rm $out_dir/treatment_tad_score.bm
 rm $out_dir/control_tad_score.bm
 
@@ -203,7 +252,7 @@ hicDifferentialTAD \
 --tadDomains $out_dir/treatment_domains.bed \
 --mode all \
 --modeReject all \
---pValue 0.02 \
+--pValue 0.01 \
 -o $out_dir/differential_TAD
 
 # rename diff tad files to .bed
@@ -226,7 +275,7 @@ cp tracks.ini ./$out_dir
 pyGenomeTracks \
 --tracks $out_dir/tracks.ini \
 --out $out_dir/diff_tads_mindepth$min_depth.maxdepth$max_depth.minbound$min_distance.delta$delta.threshold$threshold.png \
---region chr20:40000000-45000000
+--region chr20:35000000-45000000
 
 echo 'done with plotting'
 #####################################################################
