@@ -3,23 +3,31 @@
 ## 10/10/21
 
 
-### Setup
 ```bash
-python3 -m venv venv
-````
-On OSX/Linux
-```bash
-source venv/bin/activate
+./pca.sh --help
 ```
 
-On Windows
-```bash
-venv/Scripts/activate.bat
+```
+usage: pca.sh [-m, --metafile] [-i, --input-directory] [-o, --output-directory] [-s, --sample-size]
 ```
 
-### Usage
+The metafile contains the filenames, their group, and the folder they are located in:
 ```bash
-./pca.sh [-m, --metafile] [-i, --input-directory] [-o, --output-directory] [-f, --force]
+touch metafile.csv
+
+echo 105259,Primary,original_primary_files >> metafile.csv
+echo 102770,Primary,original_primary_files >> metafile.csv
+echo 102933,Primary,original_primary_files >> metafile.csv
+echo 100887,LiverMet,original_LM_files >> metafile.csv
+echo 100888,LiverMet,original_LM_files >> metafile.csv
+echo 100889,LiverMet,original_LM_files >> metafile.csv
+```
+
+The rest of the parameters are explained below:
+```
+--input-directory	The input directory is the parent directory where the folders above live.
+--output-directory	Directory where pca plot will be saved.
+--sample-size		Sample size to use for PCA. 
 ```
 
 ### Output

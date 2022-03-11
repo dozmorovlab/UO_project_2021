@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The spatial organization of chromosomes can be stored in HiC matrices. These are binary, sparse matrices that contain contact counts between chromatin regions. These We create these files using Juicer, a toolset that is created by the ![Aiden Lab] (http://aidenlab.org/), which requires unaligned fastq files from Hi-C Experiments. 
+The spatial organization of chromosomes can be stored in HiC matrices. These are binary, sparse matrices that contain contact counts between chromatin regions. These We create these files using Juicer, a toolset that is created by the [Aiden Lab] (http://aidenlab.org/), which requires unaligned fastq files from Hi-C Experiments. 
 
 We generate Hi-C files from valid read pairs that had technical duplicates removed (ie. PCR duplicates). Prior to creating the HiC files, the minimum resolution can be calculated using a script included in Juicer (```${JUICER}/misc/calculate_map_resolution.sh```), which will identify the bin size need for 80% of bins to contain > 1000 contact counts. This resolution calculation is important because:
 	
