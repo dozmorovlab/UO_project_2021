@@ -1,6 +1,6 @@
 # Additional Info
 
-This directory contains additional files supplemental to the workflow.
+This directory contains supplemental files to the workflow.
 
 ## ToDo.md
 This is a group to-do list to create a cleaner GitHub repo and our project progress presentation.
