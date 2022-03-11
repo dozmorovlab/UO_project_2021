@@ -1,10 +1,10 @@
 # AB Compartment Analysis
 
-A and B comparments are sometimes refered to as open and closed compartments, respectively. An open compartment generally has less tightly bound chromatin allowing for greater gene expression, where the opposite is true for closed compartments. When looking at a HIC matrix, the checker board pattern can implicitly be mapped to open and closed compartments. 
+A and B comparments are also referred as open and closed compartments, respectively. An open compartment generally has less tightly bound chromatin allowing for greater gene expression, where the opposite is true for closed compartments. When looking at a HIC matrix, the checker board pattern can implicitly be mapped to open and closed compartments. 
 
 ## Find Compartments
 
-In this work, we attempt to identify open and closed comparments. There are a few ways to do this, but we decided to use Principle Component Analysis and rely on gene density to determine if the positive eigenvalues correlated with open or closed compartments. 
+In this work, we attempt to identify open and closed comparments. There are a few ways to do this, but we decided to use principle component analysis and rely on gene density to determine if the positive eigenvalues correlated with open or closed compartments. 
 
 ![ab_eigen](find_compartments/output/chr20_lm_pca1_pca2_1.png)
 
