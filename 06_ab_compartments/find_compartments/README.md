@@ -12,7 +12,7 @@ The following packages will be used in R:
 
 - ab_compartments_hc.R
   Description: This script will visualize eigenvectors from PC1 and PC2 and will plot gene density (hg38).
-  - The script is hardcoded!!
+  - The script is hardcoded
   - (will incorporate in the future: **Input** )
     - I would like the script to take in bedGraph of PC1 and PC2.
     - The following options would be required:
