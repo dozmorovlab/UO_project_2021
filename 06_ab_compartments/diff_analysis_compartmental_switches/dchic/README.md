@@ -2,7 +2,7 @@
 Determine compartmental swtiches between primary and livermet using dcHic (v2).
 
 ## Setup
-HOMER can be downloaded using the following website:
+dcHiC can be downloaded using the following website:
 https://github.com/ay-lab/dcHiC
 
 ```
