@@ -17,8 +17,7 @@ This directory will determine the similarities of the replicates for the PR, LM,
   - **Output**
     - The output of the `1_hicrep.sh` will result in .txt file(s) that contain SCC scores for each chromosome.
 
-- 2_20211010_sccheatmap_mds.R  
-  ###HARDCODED###  
+- 2_20211010_sccheatmap_mds.R    
   Description: This script will create a pairwise comparison heatmap and an MDS plot using the outputs from 1_hicrep.sh (these files need to be located in the same directory). The plots can be used to determine how similar the replicates are. 
   - **Input**
     - This script takes in the .txt file(s) from 1_hicrep.sh
