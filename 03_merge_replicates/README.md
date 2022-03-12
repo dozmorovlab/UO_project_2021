@@ -12,4 +12,12 @@ This script uses the Juicer `calculate_map_resolution.sh` script referenced in `
 
 ## Randomizer.sh
 
-The merged primary file was around 500 GB, nearly twice the size of the liver metastasis sample with all merged replicates (~ 250 GB). We split the primary file into two halves, shuffled the contents randomly, then merged one half of each together to create two equally sized primary files (~250 GB).
+This script downsamples a given file. It is a custom written script for a specific file, and is not generalized.
+
+The script breaks the input file into 217 smaller files, then shuffles the lines within each of the smaller files.
+Then 37% of each of the small shuffled files is written into one single file, which is 37% the size of the original input file.
+
+This downsampled file is then ordered by chromosome number then position, and the columns are rearranged to [Juicer pre-format](https://github.com/aidenlab/juicer/wiki/Pre#file-format).
+
+This final output file is now ready to be [Juiced](https://github.com/dozmorovlab/UO_project_2021/tree/main/01_create_hic_files).
+
